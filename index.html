@@ -135,7 +135,7 @@ body{background:#f6f8fb;color:#17314d}.topbar{height:61px;box-shadow:none;border
    <div class="batch-public-banner" id="batchPublicBanner"><span class="batch-public-icon">▣</span><div><strong>Batch Pengumpulan Maklumat</strong><span id="publicBatchInfo">Memuatkan maklumat batch...</span></div></div>
    <div id="formError" class="alert hidden" role="alert"></div>
    <button id="checkSubmissionBtn" type="button" class="btn btn-outline btn-small hidden">Semak Semula Status Penghantaran</button>
-   <section id="publicSuccess" class="success hidden" role="status" aria-live="polite"><div class="success-icon">✓</div><h2>Maklumat berjaya diterima</h2><p id="publicSuccessInfo">Pengesahan penghantaran telah diterima daripada sistem.</p><div class="ref" id="publicSuccessRef"></div><p id="publicSuccessAt"></p><p>Sila simpan nombor rujukan ini untuk urusan lanjut.</p></section>
+   <section id="publicSuccess" class="success hidden" role="status" aria-live="polite"><div class="success-icon">✓</div><h2>Maklumat berjaya diterima</h2><p id="publicSuccessInfo">Pengesahan penghantaran telah diterima daripada sistem.</p><div class="ref" id="publicSuccessRef"></div><p id="publicSuccessAt"></p></section>
    <div class="wizard-top" aria-live="polite"><div class="wizard-topline"><div><span class="wizard-kicker">PROSES PENGISIAN BORANG</span><h2 id="wizardTitle">Langkah 1: Maklumat Diri</h2></div><span class="wizard-count" id="wizardCounter">1 / 4</span></div><div class="wizard-track" role="progressbar" id="wizardBar" aria-label="Kemajuan pengisian" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"><span id="wizardFill" style="width:25%"></span></div><div class="wizard-progress-caption"><span id="wizardProgressCaption">25% kemajuan</span><span>4 langkah pengisian</span></div></div>
    <form id="publicForm" method="POST" action="#" accept-charset="UTF-8" novalidate>
     <input type="hidden" name="batchId" id="batchId">
@@ -313,14 +313,23 @@ function publicJsonp(query,timeoutMs=5500){
     script.src=url.toString();document.head.appendChild(script);
   });
 }
-function receiptStatus(id){return publicJsonp({publicStatus:'RMMJ_V2',requestId:id},6500);}
+function receiptStatus(id){return publicJsonp({publicStatus:'RMMJ_V2',requestId:id},4800);}
+// Semak kesihatan sambungan lebih awal ketika pemohon mengisi borang.
+// Keputusan disimpan 2 minit pada tab semasa; Hantar tidak perlu membuat GET kedua.
+let healthPromise=null, healthValidUntil=0;
 function verifyPublicServer(){
-  return publicJsonp({publicHealth:'RMMJ_V3'},5500).then(data=>{
+  if(Date.now()<healthValidUntil)return Promise.resolve(true);
+  if(healthPromise)return healthPromise;
+  healthPromise=publicJsonp({publicHealth:'RMMJ_V3'},5200).then(data=>{
     if(!data||data.protocol!=='RMMJ_PUBLIC_V3'||data.ok!==true)
-      throw new Error('Versi Apps Script belum dikemas kini. Deploy semula sebagai New version.');
+      throw new Error('Apps Script belum menggunakan versi sistem terkini. Deploy sebagai New version.');
+    healthValidUntil=Date.now()+120000;
     return true;
-  });
+  }).finally(()=>{healthPromise=null;});
+  return healthPromise;
 }
+// Mulakan semakan secara senyap selepas halaman siap; kegagalan tetap disemak ketika Hantar.
+if(validBatch&&endpointConfigured){setTimeout(()=>{verifyPublicServer().catch(()=>{});},250);}
 function submitFrame(id){
   return new Promise((resolve,reject)=>{
     const frame=document.createElement('iframe');
@@ -337,14 +346,18 @@ function submitFrame(id){
     }
     let finished=false;
     const cleanup=()=>{clearTimeout(timer);window.removeEventListener('message',onMessage);form.remove();frame.remove();};
-    const fail=error=>{if(finished)return;finished=true;cleanup();reject(error);};
+    // Jangan buang iframe terus apabila resit lambat: tindakan itu boleh membatalkan POST.
+    // Berikan peluang penghantaran selesai dan semakan status pelayan mengesahkannya.
+    const fail=error=>{if(finished)return;finished=true;
+      clearTimeout(timer);window.removeEventListener('message',onMessage);form.remove();
+      setTimeout(()=>frame.remove(),30000);reject(error);};
     const onMessage=event=>{
       const google=/^https:\/\/(?:[a-z0-9-]+\.)*googleusercontent\.com$/i.test(event.origin)||event.origin==='https://script.google.com';
       if(!google||event.data?.tag!=='RMMJ_PUBLIC_RSP_V3'||event.data?.id!==id)return;
       if(finished)return;finished=true;cleanup();resolve(event.data.result||{});
     };
-    // Maksimum 14s sebelum beralih ke semakan sandaran; tiada hantaran kedua.
-    const timer=setTimeout(()=>fail(new Error('Resit langsung belum diterima.')),14000);
+    // Selepas 12s, semak resit di pelayan tanpa menghantar POST kali kedua.
+    const timer=setTimeout(()=>fail(new Error('Resit langsung belum diterima.')),12000);
     window.addEventListener('message',onMessage);
     document.body.append(frame,form);
     try{form.submit();}catch(error){fail(error);}
@@ -356,6 +369,9 @@ function showSubmissionSuccess(result){
   $('publicSuccessInfo').textContent='Rekod batch '+(result.batchId||batchId)+' telah disimpan.';
   R.toggle('checkSubmissionBtn',false);R.toggle('formError',false);
   R.toggle('publicForm',false);R.toggle('publicSuccess',true);
+  // Selepas simpanan berjaya sahaja: ringkaskan paparan pengesahan.
+  R.toggle('batchPublicBanner',false);
+  document.querySelector('.wizard-top')?.classList.add('hidden');
   $('publicSuccess').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function showUnknownStatus(){
