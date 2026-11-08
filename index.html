@@ -283,97 +283,139 @@ window.RMMJ_CONFIG = Object.freeze({
  }
  $('nextBtn').addEventListener('click',()=>{if(checkStep(step,true))goStep(step+1)});
  $('backBtn').addEventListener('click',()=>goStep(step-1));
- $('publicForm').addEventListener('reset',()=>{setTimeout(()=>{spouseState();$('batchId').value=batchId;$('submissionTime').value=String(Date.now());$('publicRequestId').value='';step=0;hideError();updateWizard();},0);});
- // Penghantaran tanpa navigasi: menyelesaikan isu resit Apps Script yang gagal
- // dibuka pada sesetengah telefon / pelayar dalam aplikasi WhatsApp.
- let sending=false;
- function sendLoading(visible){
-   $('submitProcessing').classList.toggle('is-visible',visible);
-   $('submitProcessing').setAttribute('aria-hidden',visible?'false':'true');
-   document.body.style.overflow=visible?'hidden':'';
-   $('submitBtn').disabled=visible;
-   $('submitBtn').textContent=visible?'Sedang mengesahkan...':'Hantar Maklumat ➜';
- }
- const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
- function receiptStatus(id){
-   return new Promise((resolve,reject)=>{
-     const callback='rmmjPub_'+id.replace(/[^a-z0-9_]/ig,'').slice(0,47)+'_'+Math.random().toString(36).slice(2,10);
-     const script=document.createElement('script');let ended=false;
-     const finish=(result,error)=>{
-       if(ended)return;ended=true;clearTimeout(timer);script.remove();delete window[callback];
-       error?reject(error):resolve(result);
-     };
-     window[callback]=data=>finish(data,null);
-     script.onerror=()=>finish(null,new Error('Pengesahan rangkaian belum tersedia.'));
-     const timer=setTimeout(()=>finish(null,new Error('Pengesahan mengambil masa lebih lama.')),9500);
-     const url=new URL(C.publicEndpoint);
-     url.searchParams.set('publicStatus','RMMJ_V2');
-     url.searchParams.set('requestId',id);
-     url.searchParams.set('callback',callback);
-     url.searchParams.set('_',String(Date.now()));
-     script.src=url.toString();document.head.appendChild(script);
-   });
- }
- async function submitStayOnPage(){
-   const form=$('publicForm');
-   let id=$('publicRequestId').value;
-   if(!id){
-     id=(crypto.randomUUID?crypto.randomUUID():('rmmj'+Date.now()+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2))).replace(/[^a-zA-Z0-9_-]/g,'');
-     $('publicRequestId').value=id;
-   }
-   const body=new URLSearchParams(new FormData(form));
-   body.set('publicAsync','RMMJ_PUBLIC_V2');
-   body.set('requestId',id);
-   sendLoading(true);
-   // No-CORS mengelakkan Android membuka halaman Google Drive/Apps Script.
-   // Respons opaque BUKAN tanda berjaya; pengesahan mesti melalui receiptStatus.
-   fetch(C.publicEndpoint,{method:'POST',mode:'no-cors',credentials:'omit',
-     body,redirect:'follow',cache:'no-store'}).catch(()=>{});
-   let latest=null;
-   for(let i=0;i<18;i++){
-     try{const status=await receiptStatus(id);if(status&&status.id===id&&status.state!=='pending'){
-       latest=status;break;
-     }}catch(_){/* rangkaian perlahan, cuba semak semula */}
-     if(i!==17)await delay(1350);
-   }
-   sendLoading(false);
-   if(latest&&latest.state==='success'&&latest.reference){
-     $('publicSuccessRef').textContent=latest.reference;
-     $('publicSuccessAt').textContent='Tarikh & masa: '+(latest.submittedAt||'-')+' (Malaysia)';
-     $('publicSuccessInfo').textContent='Rekod batch '+(latest.batchId||batchId)+' telah disimpan.';
-     R.toggle('checkSubmissionBtn',false);R.toggle('publicForm',false);R.toggle('publicSuccess',true);
-     $('publicSuccess').scrollIntoView({behavior:'smooth',block:'start'});
-     return;
-   }
-   if(latest&&latest.state==='error'){
-     showError(latest.message||'Maklumat belum dapat disimpan. Semak dengan urus setia.');
-   }else{
-     showError('Status penghantaran masih belum dapat disahkan pada telefon ini. Jangan tekan Hantar berulang kali. Sila semak dahulu dengan urus setia menggunakan No. KP dan batch. Borang anda kekal di sini.');
-     R.toggle('checkSubmissionBtn',true);
-   }
- }
- $('checkSubmissionBtn').addEventListener('click',async()=>{
-   const id=$('publicRequestId').value;if(!id)return;
-   $('checkSubmissionBtn').disabled=true;
-   try{
-     const status=await receiptStatus(id);
-     if(status?.id===id&&status.state==='success'&&status.reference){
-       $('publicSuccessRef').textContent=status.reference;
-       $('publicSuccessAt').textContent='Tarikh & masa: '+(status.submittedAt||'-')+' (Malaysia)';
-       $('publicSuccessInfo').textContent='Rekod batch '+(status.batchId||batchId)+' telah disimpan.';
-       R.toggle('checkSubmissionBtn',false);R.toggle('formError',false);
-       R.toggle('publicForm',false);R.toggle('publicSuccess',true);
-       $('publicSuccess').scrollIntoView({behavior:'smooth',block:'start'});
-     }else{showError('Pengesahan masih belum tersedia. Sila semak dengan urus setia sebelum membuat penghantaran lain.');}
-   }catch(e){showError('Sambungan semakan status tidak berjaya. Cuba buka pautan menggunakan Chrome atau Safari biasa.');}
-   finally{$('checkSubmissionBtn').disabled=false;}
- });
+ $('publicForm').addEventListener('reset',()=>{setTimeout(()=>{spouseState();$('batchId').value=batchId;$('submissionTime').value=String(Date.now());$('publicRequestId').value='';unknownSubmission=false;step=0;hideError();updateWizard();},0);});
+
+// Penghantaran V3: sahkan akses pelayan, kemudian POST terus ke iframe tersembunyi.
+// Kejayaan ditentukan HANYA oleh resit pelayan (postMessage) atau status pelayan.
+let sending=false,unknownSubmission=false;
+function sendLoading(visible){
+  $('submitProcessing').classList.toggle('is-visible',visible);
+  $('submitProcessing').setAttribute('aria-hidden',visible?'false':'true');
+  document.body.style.overflow=visible?'hidden':'';
+  $('submitBtn').disabled=visible||unknownSubmission;
+  $('submitBtn').textContent=visible?'Sedang menghantar...':'Hantar Maklumat ➜';
+}
+function publicJsonp(query,timeoutMs=5500){
+  return new Promise((resolve,reject)=>{
+    const callback='rmmjPub_'+Math.random().toString(36).slice(2)+Date.now().toString(36);
+    const script=document.createElement('script');let ended=false;
+    const finish=(result,error)=>{
+      if(ended)return;ended=true;clearTimeout(timer);script.remove();delete window[callback];
+      error?reject(error):resolve(result);
+    };
+    window[callback]=data=>finish(data,null);
+    script.onerror=()=>finish(null,new Error('Pelayan tidak boleh dicapai tanpa log masuk.'));
+    const timer=setTimeout(()=>finish(null,new Error('Pelayan tidak memberi respons.')),timeoutMs);
+    const url=new URL(C.publicEndpoint);
+    for(const [key,value] of Object.entries(query))url.searchParams.set(key,value);
+    url.searchParams.set('callback',callback);
+    url.searchParams.set('_',String(Date.now()));
+    script.src=url.toString();document.head.appendChild(script);
+  });
+}
+function receiptStatus(id){return publicJsonp({publicStatus:'RMMJ_V2',requestId:id},6500);}
+function verifyPublicServer(){
+  return publicJsonp({publicHealth:'RMMJ_V3'},5500).then(data=>{
+    if(!data||data.protocol!=='RMMJ_PUBLIC_V3'||data.ok!==true)
+      throw new Error('Versi Apps Script belum dikemas kini. Deploy semula sebagai New version.');
+    return true;
+  });
+}
+function submitFrame(id){
+  return new Promise((resolve,reject)=>{
+    const frame=document.createElement('iframe');
+    frame.name='rmmj_public_frame_'+id;
+    frame.setAttribute('aria-hidden','true');
+    frame.style.cssText='position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;border:0';
+    const form=document.createElement('form');form.method='POST';form.action=C.publicEndpoint;form.target=frame.name;form.style.display='none';
+    const payload=new FormData($('publicForm'));
+    payload.set('publicAsync','RMMJ_PUBLIC_V3');
+    payload.set('requestId',id);
+    payload.set('origin',location.origin);
+    for(const [name,value] of payload.entries()){
+      const input=document.createElement('input');input.type='hidden';input.name=name;input.value=String(value);form.appendChild(input);
+    }
+    let finished=false;
+    const cleanup=()=>{clearTimeout(timer);window.removeEventListener('message',onMessage);form.remove();frame.remove();};
+    const fail=error=>{if(finished)return;finished=true;cleanup();reject(error);};
+    const onMessage=event=>{
+      const google=/^https:\/\/(?:[a-z0-9-]+\.)*googleusercontent\.com$/i.test(event.origin)||event.origin==='https://script.google.com';
+      if(!google||event.data?.tag!=='RMMJ_PUBLIC_RSP_V3'||event.data?.id!==id)return;
+      if(finished)return;finished=true;cleanup();resolve(event.data.result||{});
+    };
+    // Maksimum 14s sebelum beralih ke semakan sandaran; tiada hantaran kedua.
+    const timer=setTimeout(()=>fail(new Error('Resit langsung belum diterima.')),14000);
+    window.addEventListener('message',onMessage);
+    document.body.append(frame,form);
+    try{form.submit();}catch(error){fail(error);}
+  });
+}
+function showSubmissionSuccess(result){
+  $('publicSuccessRef').textContent=result.reference;
+  $('publicSuccessAt').textContent='Tarikh & masa: '+(result.submittedAt||'-')+' (Malaysia)';
+  $('publicSuccessInfo').textContent='Rekod batch '+(result.batchId||batchId)+' telah disimpan.';
+  R.toggle('checkSubmissionBtn',false);R.toggle('formError',false);
+  R.toggle('publicForm',false);R.toggle('publicSuccess',true);
+  $('publicSuccess').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function showUnknownStatus(){
+  unknownSubmission=true;
+  showError('Status penghantaran belum dapat dipastikan. Maklumat masih kekal di borang ini. Jangan hantar lagi; tekan Semak Semula Status atau hubungi urus setia untuk semakan batch '+batchId+'.');
+  R.toggle('checkSubmissionBtn',true);
+  $('submitBtn').disabled=true;
+}
+async function submitStayOnPage(){
+  let id=$('publicRequestId').value;
+  if(!id){
+    id=(crypto.randomUUID?.()||('rmmj'+Date.now()+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2))).replace(/[^a-zA-Z0-9_-]/g,'');
+    $('publicRequestId').value=id;
+  }
+  sendLoading(true);
+  try{
+    // Jika Google meminta sign-in / versi backend masih lama, berhenti awal.
+    try{await verifyPublicServer();}
+    catch(err){
+      showError('Sambungan Apps Script tidak tersedia untuk orang awam atau deployment belum dikemas kini. Urus setia perlu tetapkan Web App kepada \"Execute as: Me\" dan \"Who has access: Anyone\", kemudian Deploy > Manage deployments > Edit > New version. Maklumat belum dihantar.');
+      return;
+    }
+    let result=null;
+    try{result=await submitFrame(id);}
+    catch(e){
+      // Semak status pada cache pelayan TANPA membuat POST kedua.
+      try{result=await receiptStatus(id);}catch(_){/* tiada pengesahan */}
+    }
+    if(result?.state==='success'&&result.reference){showSubmissionSuccess(result);return;}
+    if(result?.state==='error'){
+      // Penolakan yang telah disahkan membenarkan pembetulan dan hantar semula.
+      $('publicRequestId').value='';
+      showError(result.message||'Maklumat belum dapat disimpan. Sila semak dan hantar semula.');
+      return;
+    }
+    showUnknownStatus();
+  }finally{sendLoading(false);}
+}
+$('checkSubmissionBtn').addEventListener('click',async()=>{
+  const id=$('publicRequestId').value;if(!id)return;
+  $('checkSubmissionBtn').disabled=true;
+  try{
+    const result=await receiptStatus(id);
+    if(result?.id===id&&result.state==='success'&&result.reference){
+      unknownSubmission=false;showSubmissionSuccess(result);
+    }else if(result?.state==='error'){
+      unknownSubmission=false;$('publicRequestId').value='';
+      $('submitBtn').disabled=false;R.toggle('checkSubmissionBtn',false);
+      showError(result.message||'Pelayan menolak penghantaran. Sila semak borang.');
+    }else{showUnknownStatus();}
+  }catch(e){showError('Status masih tidak dapat disemak. Sila hubungi urus setia; jangan hantar dua kali.');}
+  finally{$('checkSubmissionBtn').disabled=false;}
+});
  $('publicForm').addEventListener('submit',async function(ev){
    ev.preventDefault();hideError();if(sending)return;
    if(!validBatch||!endpointConfigured){showError('Pautan batch atau konfigurasi sistem tidak sah. Hubungi urus setia.');return;}
    for(let i=0;i<sections.length;i++){
      if(!checkStep(i,false)){goStep(i);checkStep(i,true);return;}
    }
+   if(unknownSubmission){showUnknownStatus();return;}
    sending=true;
    try{await submitStayOnPage();}
    catch(err){sendLoading(false);showError('Sambungan tidak berjaya disahkan. Sila hubungi urus setia sebelum menghantar semula.');}
