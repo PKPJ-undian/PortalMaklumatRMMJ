@@ -170,6 +170,27 @@ body{background:#f6f8fb;color:#17314d} .topbar{height:61px;position:sticky;backg
 #manageBatchBtn.is-active,#pdfBtn.is-active{background:#174b70!important;color:white!important;border-color:#174b70!important;box-shadow:0 0 0 3px rgba(31,93,136,.13)}
 #editSelectedBatchBtn,#toggleSelectedBatchBtn{min-height:38px}
 @media(max-width:540px){#editSelectedBatchBtn,#toggleSelectedBatchBtn{flex:1 1 auto}.batch-actions .batch-picker{flex-basis:100%}}
+
+/* PENAMBAHBAIKAN TERHAD: mod sunting rekod landscape tanpa menukar UI lain. */
+#editOverlay{align-items:center;justify-content:center;padding:clamp(8px,2vw,24px);}
+#editOverlay .modal{width:min(1100px,100%);max-width:none;max-height:calc(100dvh - 30px);height:min(780px,calc(100dvh - 30px));border-radius:18px;overflow:hidden;}
+#editOverlay #editForm{display:flex;flex-direction:column;min-height:0;flex:1;overflow:hidden;}
+#editOverlay .modalhead{flex:none;padding:18px 25px;}
+#editOverlay .modalbody{flex:1;min-height:0;overflow:auto;padding:22px 25px;overscroll-behavior:contain;}
+#editOverlay .modalfooter{flex:none;padding:13px 25px;background:#fff;}
+#editOverlay .modalbody>.fields,#editOverlay .modalbody>.spouse .fields{grid-template-columns:repeat(3,minmax(0,1fr));}
+#editOverlay .modalbody .field.full{grid-column:1/-1;}
+#editOverlay .modalsection{margin-top:12px!important;}
+@media(max-width:760px){
+  #editOverlay .modal{width:100%;height:calc(100dvh - 14px);max-height:calc(100dvh - 14px);border-radius:14px;}
+  #editOverlay .modalbody>.fields,#editOverlay .modalbody>.spouse .fields{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media(max-width:500px){
+  #editOverlay{padding:0;}
+  #editOverlay .modal{height:100dvh;max-height:100dvh;border-radius:0;}
+  #editOverlay .modalbody>.fields,#editOverlay .modalbody>.spouse .fields{grid-template-columns:1fr;}
+  #editOverlay .modalhead,#editOverlay .modalbody,#editOverlay .modalfooter{padding-left:17px;padding-right:17px;}
+}
 </style></head>
 <body>
 <div class="admin-progress" id="adminProgress" aria-hidden="true"><span></span></div>
@@ -339,32 +360,41 @@ window.RMMJ_CONFIG = Object.freeze({
    if(!records.length)text(pg,M,y+22,'Tiada rekod.',10,{color:'mute'});
  }
  function detail(pages,records,meta){
-   let pg=newPage(pages,meta,false),y=132;
+   // SATU pemohon = SATU halaman A4 landscape. Kesemua 13 maklumat dan medan semakan dikekalkan.
    records.forEach((r,i)=>{
+     const pg=newPage(pages,meta,true),top=127,cardHeight=H-179;
      const left=[['Nama',r.name],['No. Kad Pengenalan',r.ic],['No. Telefon',r.phone],['Jabatan Semasa',r.department],['Jawatan',r.position],['Status Perkahwinan',r.maritalStatus],['Nama Pasangan',r.spouseName||(r.maritalStatus==='Berkahwin'?'-':'Tidak berkaitan')],['No. KP Pasangan',r.spouseIc||(r.maritalStatus==='Berkahwin'?'-':'Tidak berkaitan')],['No. Telefon Pasangan',r.spousePhone||(r.maritalStatus==='Berkahwin'?'-':'Tidak berkaitan')]];
-     const rightFields=[['Jumlah Pendapatan Isi Rumah (RM)',Number(r.householdIncome||0).toLocaleString('en-US',{minimumFractionDigits:2})],['Telah berdaftar / ada akaun e-Rumah?',r.hasERumah],['Pernah Memiliki Harta/Rumah Lain?',r.hasOwnedProperty],['Daerah Pilihan Permohonan RMMJ',r.district],['Status Semakan',r.reviewStatus],['Catatan Admin',r.adminNotes],['Tarikh Hantar',r.createdAt],['Tarikh Kemas Kini',r.updatedAt],['ID Batch',r.batchId]];
-     const colWidth=(W-2*M-32)/2;
-     const toItems=arr=>arr.map(([label,val])=>({label,value:wrap(val||'-',colWidth-25,8.5)}));
-     const la=toItems(left),ra=toItems(rightFields);
-     const fieldH=it=>14+Math.max(1,it.value.length)*10+4;
-     let li=0,ri=0,part=0;
-     while(li<la.length||ri<ra.length){
-       const minimum=105;
-       if(y+minimum>H-49){pg=newPage(pages,meta,true);y=121;}
-       let available=H-49-y-53;
-       let lchunk=[],rchunk=[],lh=0,rh=0;
-       while(li<la.length&&lh+fieldH(la[li])<=available){lchunk.push(la[li]);lh+=fieldH(la[li++]);}
-       while(ri<ra.length&&rh+fieldH(ra[ri])<=available){rchunk.push(ra[ri]);rh+=fieldH(ra[ri++]);}
-       if(!lchunk.length&&!rchunk.length){pg=newPage(pages,meta,true);y=121;continue;}
-       const cardH=43+Math.max(lh,rh)+10;
-       rect(pg,M,y,W-2*M,cardH,'white');
-       rect(pg,M,y,W-2*M,35,'lightBlue','lightBlue');
-       text(pg,M+14,y+23,`${i+1}. ${r.name||'-'}${part?' (sambungan)':''}`,11,{bold:true,color:'navy'});
-       right(pg,W-M-14,y+22,r.id||'-',8,{color:'blue'});
-       const drawColumn=(items,x)=>{let yy=y+52;for(const it of items){text(pg,x,yy,it.label.toUpperCase(),7,{bold:true,color:'mute'});yy+=12;for(const line of it.value){text(pg,x,yy,line,8.5,{color:'ink'});yy+=10;}yy+=8;}};
-       drawColumn(lchunk,M+14);drawColumn(rchunk,M+18+colWidth);
-       y+=cardH+12;part++;
+     const rightFields=[['Jumlah Pendapatan Isi Rumah (RM)',Number(r.householdIncome||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})],['Telah Berdaftar / Ada Akaun e-Rumah?',r.hasERumah],['Pernah Memiliki Harta/Rumah Lain?',r.hasOwnedProperty],['Daerah Pilihan Permohonan RMMJ',r.district],['Status Semakan',r.reviewStatus],['Catatan Admin',r.adminNotes||'-'],['Tarikh Hantar',r.createdAt],['Tarikh Kemas Kini',r.updatedAt],['ID Batch',r.batchId]];
+     rect(pg,M,top,W-2*M,cardHeight,'white');
+     rect(pg,M,top,W-2*M,36,'lightBlue','lightBlue');
+     const title=wrap(`${i+1}. ${r.name||'-'}`,440,11)[0];
+     text(pg,M+15,top+24,title,11,{bold:true,color:'navy'});
+     right(pg,W-M-14,top+23,r.id||'-',8,{color:'blue'});
+     const usableTop=top+48, usableHeight=cardHeight-58;
+     const colW=(W-2*M-48)/2;
+     const leftX=M+15, rightX=M+29+colW;
+     // Ukuran teks dijalankan dahulu supaya tiada pemohon terpotong atau bersambung ke halaman berikutnya.
+     const options=[{font:8.5,line:10.8,gap:6.8,label:7.0},{font:7.8,line:9.6,gap:5.3,label:6.7},{font:7.0,line:8.5,gap:4.0,label:6.4},{font:6.2,line:7.5,gap:2.8,label:6.0}];
+     const measure=(items,opt)=>items.map(([label,value])=>({
+       label,value:wrap(value==null||value===''?'-':String(value),colW-20,opt.font)
+     }));
+     const heightOf=(items,opt)=>items.reduce((sum,item)=>sum+13+item.value.length*opt.line+opt.gap,0);
+     let opt=options[options.length-1], litems=[],ritems=[];
+     for(const candidate of options){
+       const l=measure(left,candidate),rr=measure(rightFields,candidate);
+       if(Math.max(heightOf(l,candidate),heightOf(rr,candidate))<=usableHeight){opt=candidate;litems=l;ritems=rr;break;}
      }
+     if(!litems.length){litems=measure(left,opt);ritems=measure(rightFields,opt);}
+     const drawFields=(items,x)=>{
+       let y=usableTop;
+       for(const item of items){
+         text(pg,x,y,item.label.toUpperCase(),opt.label,{bold:true,color:'mute'});
+         y+=13;
+         for(const line of item.value){text(pg,x,y,line,opt.font,{color:'ink'});y+=opt.line;}
+         y+=opt.gap;
+       }
+     };
+     drawFields(litems,leftX);drawFields(ritems,rightX);
    });
  }
  function serialize(pages,meta){
@@ -1616,7 +1646,7 @@ window.RMMJ_QR = {make:function(value){var q=new QRCode(0,QRErrorCorrectLevel.M)
  const BATCH_FIELDS=['id','name','organization','startDate','endDate','status','sheetName','createdAt','updatedAt','notes'];
  const INPUTS=['name','ic','phone','department','position','maritalStatus','spouseName','spouseIc','spousePhone','householdIncome','hasERumah','hasOwnedProperty','district','reviewStatus','adminNotes'];
  const configured=R.isConfigured(C.publicEndpoint);
- const state={token:'',adminEmail:'',batches:[],selectedBatchId:'',openBatchId:'',records:[],sheetGid:null,page:1,pageSize:7,editIndex:null,editingBatchId:null,loading:false,selectedIds:new Set()};
+ const state={token:'',adminEmail:'',batches:[],selectedBatchId:'',openBatchId:'',records:[],sheetGid:null,page:1,pageSize:7,editIndex:null,editingBatchId:null,loading:false,selectedIds:new Set(),recordCache:new Map(),loadSequence:0};
  R.options('districtFilter',C.districts,'Semua Daerah');R.options('statusFilter',C.reviewStatuses,'Semua Status');
  R.options('e-maritalStatus',C.maritalStatuses);R.options('e-district',C.districts);R.options('e-reviewStatus',C.reviewStatuses);
  function activeBatch(){return state.batches.find(b=>b.id===state.selectedBatchId)||null;}
@@ -1694,29 +1724,42 @@ async function adminRpc(op,data={}){
    });
  }
   function range(sheet,cell){return encodeURIComponent("'"+sheet.replace(/'/g,"''")+"'!"+cell);}
-async function loadBatchData(){
+async function loadBatchData(force=false){
    const b=activeBatch();if(!b){state.records=[];render();return;}
-   $('tableInfo').textContent='Mengambil rekod batch '+b.id+'…';
-   const response=await adminRpc('listRecords',{batchId:b.id});
+   const id=b.id,sequence=++state.loadSequence,entry=state.recordCache.get(id);
+   // Pertukaran batch yang baru dimuatkan boleh dipaparkan terus tanpa permintaan rangkaian kedua.
+   if(!force&&entry&&(Date.now()-entry.time)<30000){
+     state.records=entry.records;state.page=1;render();renderBatchCards();return;
+   }
+   $('tableInfo').textContent='Mengambil rekod batch '+id+'…';
+   const response=await adminRpc('listRecords',{batchId:id});
+   state.recordCache.set(id,{records:response.records||[],time:Date.now()});
+   if(sequence!==state.loadSequence||state.selectedBatchId!==id)return;
    state.records=response.records||[];
    state.page=1;render();renderBatchCards();
  }
- async function activateAdmin(batches,prefer){
+ async function activateAdmin(batches,prefer,preloadedRecords,preloadedBatchId){
    state.batches=Array.isArray(batches)?batches:[];
    if(!state.batches.length)throw new Error('Tiada batch. Jalankan setup() dalam Apps Script.');
    state.selectedBatchId=state.batches.some(b=>b.id===(prefer||state.selectedBatchId))?(prefer||state.selectedBatchId):state.batches[0].id;
    R.toggle('adminDashboard',true);R.toggle('adminHeaderTools',true);
    R.toggle('authPanel',false);state.records=[];state.page=1;
-   // Pilihan dropdown menentukan satu batch; rekodnya terus dipaparkan.
    state.openBatchId=state.selectedBatchId;
+   if(Array.isArray(preloadedRecords)&&preloadedBatchId===state.selectedBatchId){
+     state.recordCache.set(preloadedBatchId,{records:preloadedRecords,time:Date.now()});
+   }
    updateBatchUI();syncPanelButtons();
    $('tableInfo').textContent='Mengambil rekod batch…';
    await loadBatchData();
  }
  async function loadReal(prefer){
    lockState(true);
-   try{const response=await adminRpc('listBatches');await activateAdmin(response.batches,prefer);}
-   catch(e){R.toast('Gagal memuatkan data: '+e.message);}
+   try{
+     // Satu RPC untuk batch + rekod, bukan dua permintaan berurutan.
+     const response=await adminRpc('bootstrap',{batchId:prefer||state.selectedBatchId});
+     if(response.recordBatchId)state.recordCache.delete(response.recordBatchId);
+     await activateAdmin(response.batches,prefer,response.records,response.recordBatchId);
+   }catch(e){R.toast('Gagal memuatkan data: '+e.message);}
    finally{lockState(false);}
  }
  async function passwordLogin(){
@@ -1728,7 +1771,7 @@ async function loadBatchData(){
      state.token=response.token;state.adminEmail='Admin PKPJ';$('adminPassword').value='';
      if(response.hint)updateHint(response.hint);
      // Login memulangkan batch sekali gus: kurang satu roundtrip Apps Script.
-     await activateAdmin(response.batches||[]);
+     await activateAdmin(response.batches||[],null,response.records,response.recordBatchId);
      R.toast('Akses admin disahkan.');
    }catch(e){R.toast(e.message||'Log masuk gagal.');}
    finally{$('loginBtn').disabled=false;$('loginBtn').classList.remove('is-busy');$('loginBtn').removeAttribute('aria-busy');}
@@ -1789,7 +1832,10 @@ async function saveRecord(){
    lockState(true);
    try{
      await adminRpc('saveRecord',{...old,...input});
-     hideModal();await loadBatchData();R.toast('Rekod berjaya dikemas kini.');
+     const updated={...old,...input,updatedAt:now()};
+     state.records[state.editIndex]=updated;
+     state.recordCache.set(old.batchId,{records:state.records,time:Date.now()});
+     hideModal();render();R.toast('Rekod berjaya dikemas kini.');
    }catch(e){R.toast('Kemas kini gagal: '+e.message);}
    finally{lockState(false);}
  }
@@ -1798,7 +1844,10 @@ async function saveRecord(){
    if(!records.length||records.length>50)throw new Error('Pilih maksimum 50 rekod.');
    // Arkib dan pemadaman dilakukan bersama-sama di Apps Script, di bawah ScriptLock.
    await adminRpc('deleteRecords',{batchId:b.id,ids:records.map(r=>r.id)});
-   state.selectedIds.clear();hideModal();await loadBatchData();
+   const toRemove=new Set(records.map(r=>r.id));
+   state.records=state.records.filter(r=>!toRemove.has(r.id));
+   state.recordCache.set(b.id,{records:state.records,time:Date.now()});
+   state.selectedIds.clear();hideModal();render();
  }
   async function deleteRecord(){
    const r=state.records[state.editIndex];if(!r)return;
@@ -1945,6 +1994,20 @@ async function saveRecord(){
    pop.document.close();pop.focus();setTimeout(()=>pop.print(),350);
  });
   $('reloadBtn').addEventListener('click',()=>{state.selectedIds.clear();updateSelectionBar();loadReal(state.selectedBatchId);});
+ // Kemas kini rekod batch aktif secara berkala ketika admin sedang menggunakan portal.
+ // Elakkan permintaan bertindih, quota tinggi atau mengganggu borang Edit yang sedang terbuka.
+ setInterval(()=>{
+   if(!state.token||state.loading||document.visibilityState!=='visible'||
+      !state.selectedBatchId||!$('editOverlay').classList.contains('hidden'))return;
+   const entry=state.recordCache.get(state.selectedBatchId);
+   if(entry&&Date.now()-entry.time<40000)return;
+   loadBatchData(true).catch(()=>{});
+ },45000);
+ document.addEventListener('visibilitychange',()=>{
+   if(document.visibilityState!=='visible'||!state.token||state.loading||!state.selectedBatchId)return;
+   const entry=state.recordCache.get(state.selectedBatchId);
+   if(!entry||Date.now()-entry.time>40000)loadBatchData(true).catch(()=>{});
+ });
  $('exportBtn').addEventListener('click',exportCsv);
  $('pdfBtn').addEventListener('click',()=>{R.toggle('pdfPanel',$('pdfPanel').classList.contains('hidden'));syncPanelButtons();});
  $('closePdfBtn').addEventListener('click',()=>{R.toggle('pdfPanel',false);syncPanelButtons();});
