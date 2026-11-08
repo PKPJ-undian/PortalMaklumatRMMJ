@@ -136,7 +136,7 @@ body{background:#f6f8fb;color:#17314d}.topbar{height:61px;box-shadow:none;border
    <div id="formError" class="alert hidden" role="alert"></div>
    <button id="checkSubmissionBtn" type="button" class="btn btn-outline btn-small hidden">Semak Semula Status Penghantaran</button>
    <section id="publicSuccess" class="success hidden" role="status" aria-live="polite"><div class="success-icon">✓</div><h2>Maklumat berjaya diterima</h2><p id="publicSuccessInfo">Pengesahan penghantaran telah diterima daripada sistem.</p><div class="ref" id="publicSuccessRef"></div><p id="publicSuccessAt"></p><p>Sila simpan nombor rujukan ini untuk urusan lanjut.</p></section>
-   <div class="wizard-top" aria-live="polite"><div class="wizard-topline"><div><span class="wizard-kicker">PROSES PENGISIAN BORANG</span><h2 id="wizardTitle">Langkah 1: Maklumat Diri</h2></div><span class="wizard-count" id="wizardCounter">1 / 4</span></div><div class="public-step-line" aria-hidden="true"><span class="public-step-chip is-current"></span><span class="public-step-chip"></span><span class="public-step-chip"></span><span class="public-step-chip"></span></div><div class="wizard-track" role="progressbar" id="wizardBar" aria-label="Kemajuan pengisian" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"><span id="wizardFill" style="width:25%"></span></div><div class="wizard-progress-caption"><span id="wizardProgressCaption">25% kemajuan</span><span>4 langkah pengisian</span></div></div>
+   <div class="wizard-top" aria-live="polite"><div class="wizard-topline"><div><span class="wizard-kicker">PROSES PENGISIAN BORANG</span><h2 id="wizardTitle">Langkah 1: Maklumat Diri</h2></div><span class="wizard-count" id="wizardCounter">1 / 4</span></div><div class="wizard-track" role="progressbar" id="wizardBar" aria-label="Kemajuan pengisian" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"><span id="wizardFill" style="width:25%"></span></div><div class="wizard-progress-caption"><span id="wizardProgressCaption">25% kemajuan</span><span>4 langkah pengisian</span></div></div>
    <form id="publicForm" method="POST" action="#" accept-charset="UTF-8" novalidate>
     <input type="hidden" name="batchId" id="batchId">
     <input type="hidden" name="submissionTime" id="submissionTime">
@@ -240,7 +240,7 @@ window.RMMJ_CONFIG = Object.freeze({
  function hideError(){R.toggle('formError',false);}
  function updateWizard(){
    sections.forEach((el,i)=>el.classList.toggle('hidden',i!==step));
-   document.querySelectorAll('.timeline .step').forEach((el,i)=>{el.classList.toggle('active',i===step);el.classList.toggle('completed',i<step);});document.querySelectorAll('.public-step-chip').forEach((el,i)=>{el.classList.toggle('is-current',i===step);el.classList.toggle('is-done',i<step);});
+   document.querySelectorAll('.timeline .step').forEach((el,i)=>{el.classList.toggle('active',i===step);el.classList.toggle('completed',i<step);});
    $('wizardTitle').textContent=`Langkah ${step+1}: ${titles[step]}`;
    $('wizardCounter').textContent=`${step+1} / ${sections.length}`;
    const percentage=Math.round((step+1)/sections.length*100);
