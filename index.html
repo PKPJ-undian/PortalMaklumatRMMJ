@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#123c5e">
+<title>Pengumpulan Maklumat Berkaitan Permohonan RMMJ | Portal Pemohon</title>
+<meta name="description" content="Portal pengumpulan maklumat pemohon berkaitan permohonan Rumah Mampu Milik Johor (RMMJ).">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+:root{--navy:#132b47;--navy2:#1c4469;--ink:#1b3048;--sub:#6f8095;--gold:#eab448;--gold2:#f5d68f;--line:#e2eaf1;--bg:#f4f7fb;--white:#fff;--mint:#eaf8ef;--green:#16845b;--red:#b53c4e;--radius:20px;--shadow:0 12px 40px rgba(31,58,91,.075)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 'DM Sans','Arial',sans-serif}a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}h1,h2,h3,h4,p{margin:0}h1,h2,h3{font-family:'Plus Jakarta Sans','DM Sans',sans-serif}*:focus-visible{outline:3px solid #d9ae48;outline-offset:2px}.muted{color:var(--sub)}.hidden{display:none!important}
+.topbar{height:72px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50}.navwrap{max-width:1260px;height:100%;margin:auto;padding:0 28px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;gap:12px;align-items:center;min-width:0}.logo{display:grid;place-items:center;width:46px;height:46px;border-radius:13px;background:linear-gradient(145deg,#153657,#315f82);color:var(--gold2);font-weight:800;font-family:'Plus Jakarta Sans';font-size:14px;letter-spacing:-1px;box-shadow:inset 0 0 0 1px #ffffff21}.brand-main{font-weight:800;font-size:14px;line-height:1.3;color:#193552}.brand-sub{font-size:11px;color:var(--sub);font-weight:600;letter-spacing:.4px}.navlinks{display:flex;align-items:center;gap:6px}.navlink{padding:10px 15px;border-radius:11px;color:#66768a;font-weight:800;font-size:12px;transition:.2s}.navlink.active{background:#e9f0f7;color:#163c64}.navlink:hover{color:#153657;background:#f4f7fb}.navlink.adminlink{border:1px solid #dae5ef}
+.page{max-width:1260px;margin:auto;padding:32px 28px 50px}.headband{background:linear-gradient(112deg,#102e50 0%,#16446b 62%,#1c5275 100%);border-radius:24px;position:relative;overflow:hidden;color:white;padding:34px 36px;min-height:193px;display:flex;align-items:center;justify-content:space-between;gap:26px}.headband::after{content:'';position:absolute;width:380px;height:380px;right:-110px;top:-125px;border:1px solid #ffffff2b;border-radius:50%;box-shadow:0 0 0 55px #ffffff09,0 0 0 110px #ffffff07}.headband::before{content:'';position:absolute;width:220px;height:220px;right:220px;bottom:-165px;border-radius:50%;border:1px solid #ffffff1b}.hero-content{position:relative;z-index:1;max-width:735px}.eyebrow{font-size:10px;letter-spacing:2.5px;font-weight:800;text-transform:uppercase;color:#f2c967;margin-bottom:12px}.headband h1{font-size:clamp(23px,2.7vw,34px);line-height:1.22;letter-spacing:-1.1px;font-weight:800}.headband p{max-width:630px;color:#d7e4f0;margin-top:10px;font-size:13px}.hero-art{z-index:1;position:relative;display:flex;align-items:center;justify-content:center;min-width:145px}.hero-icon{height:113px;width:113px;background:#ffffff18;border:1px solid #ffffff35;backdrop-filter:blur(8px);border-radius:28px;display:grid;place-items:center;transform:rotate(-7deg);box-shadow:0 16px 45px #071c3255}.hero-icon svg{width:53px;height:53px;stroke:#f7d487;stroke-width:1.5;fill:none;transform:rotate(7deg)}
+.kicker{display:flex;align-items:center;gap:7px;color:#8190a3;font-size:11px;font-weight:700;margin:19px 0 18px}.kicker b{color:#255174}.kicker .dot{width:4px;height:4px;border-radius:50%;background:#a7b5c2}.split{display:grid;grid-template-columns:275px minmax(0,1fr);gap:22px;align-items:start}.sidecard,.formcard,.card{background:#fff;border:1px solid #e3ebf2;border-radius:var(--radius);box-shadow:var(--shadow)}.sidecard{padding:24px;position:sticky;top:94px}.sidetitle{font-size:16px;font-weight:800;letter-spacing:-.4px;margin-bottom:8px}.sidetext{font-size:12px;color:var(--sub);margin-bottom:24px}.timeline{display:flex;flex-direction:column;gap:24px;position:relative}.timeline:before{content:'';position:absolute;left:16px;top:18px;bottom:30px;width:1px;background:#dce7f0}.step{display:flex;align-items:center;gap:12px;position:relative}.step-num{width:33px;height:33px;display:grid;place-items:center;border-radius:10px;background:#e9f0f7;color:#436583;font-size:12px;font-weight:800;flex:none}.step.active .step-num{background:#173a5b;color:#ffcd65}.step strong{display:block;font-size:12px}.step small{font-size:10px;color:#8b9aaa}.sidefoot{margin-top:29px;background:#f5f8fb;padding:14px;border-radius:13px;color:#6e8092;font-size:11px}.sidefoot strong{color:#204568}
+.formarea{display:flex;flex-direction:column;gap:18px}.formcard{padding:28px 29px}.section-head{display:flex;gap:13px;align-items:center;padding-bottom:19px;margin-bottom:22px;border-bottom:1px solid #edf1f5}.section-symbol{display:grid;place-items:center;flex:none;height:39px;width:39px;border-radius:13px;background:#edf3fa;color:#245275;font-size:13px;font-weight:800}.section-head h2{font-size:16px;letter-spacing:-.3px;font-weight:800}.section-head p{font-size:11px;color:#8a98aa;margin-top:2px}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:19px 20px}.field{display:flex;flex-direction:column;gap:7px;min-width:0}.field.full{grid-column:1 / -1}.field label{font-size:11px;font-weight:800;color:#284159}.req{color:#cf5264}.control{height:43px;border:1px solid #dce5ee;border-radius:10px;background:#fff;padding:0 13px;color:#263e57;outline:none;width:100%;transition:.2s}.control:hover{border-color:#b5cadb}.control:focus{border-color:#447da6;box-shadow:0 0 0 3px #cee4f34a}.control::placeholder{color:#a3afbe}.control.select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%237d8fa0' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}.textarea{height:90px;padding:12px;resize:vertical}.hint{font-size:10px;color:#8d9aab}.spouse{border:1px dashed #bdd3e6;background:#f7fafd;border-radius:14px;margin-top:20px;padding:20px}.spouse-h{font-size:12px;color:#214967;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px}.spouse-h:before{content:'+';width:23px;height:23px;border-radius:8px;display:grid;place-items:center;background:#e3edf6;color:#27557a;font-size:16px}
+.consent{background:#edf4fb;border:1px solid #d8e7f4;border-radius:15px;padding:20px;margin:3px 0 0}.consent p{font-size:11px;color:#607c96;margin-bottom:12px}.checkline{display:flex;gap:10px;align-items:flex-start;color:#335471;font-size:11px;font-weight:700}.checkline input{accent-color:#1d5577;width:15px;height:15px;margin:1px 0 0;flex:none}.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:3px}.btn{display:inline-flex;gap:9px;align-items:center;justify-content:center;min-height:43px;border-radius:11px;font-weight:800;font-size:12px;padding:10px 19px;border:1px solid transparent;transition:.2s;white-space:nowrap}.btn:hover{transform:translateY(-1px)}.btn-primary{background:#184568;color:#fff;box-shadow:0 6px 15px #113c6030}.btn-primary:hover{background:#103656}.btn-outline{border-color:#d6e2ed;background:white;color:#35546d}.btn-gold{background:#edb947;color:#1d3550}.btn-red{background:#fff2f3;border-color:#f2c6cb;color:#b34153}.btn-small{padding:7px 12px;min-height:34px;font-size:11px}.notice{margin-bottom:18px;padding:12px 15px;border-radius:11px;background:#fff8e8;color:#806028;border:1px solid #f3e2b8;font-size:11px}.notice strong{color:#7d5620}.alert{padding:14px 18px;border:1px solid #f1bfc7;background:#fff2f2;color:#a83345;border-radius:12px;font-size:12px}.demo-chip{background:#fff1ca;color:#825809;padding:6px 10px;border-radius:999px;font-size:10px;font-weight:900;display:inline-flex;gap:5px;align-items:center;letter-spacing:.5px}.success{border-radius:18px;background:#fff;border:1px solid #e2ebf1;padding:40px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}.success-icon{width:72px;height:72px;background:#e7f7ed;border-radius:24px;display:grid;place-items:center;color:#14844d;font-size:36px}.success h2{font-size:21px}.success p{max-width:460px;color:#77869a}.success .ref{background:#f0f5fa;padding:12px 20px;border-radius:12px;color:#19476e;font-weight:800;letter-spacing:1px}.footer{text-align:center;font-size:11px;color:#96a3b1;margin:0 auto;padding:23px 18px 30px;border-top:1px solid #e1eaf2}.footer strong{color:#526d86}
+.admin-top{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:22px}.admin-title{font-size:24px;letter-spacing:-.8px}.admin-sub{color:#8090a2;font-size:12px;margin-top:6px}.admin-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:20px}.stat{background:#fff;border:1px solid #e3ebf2;padding:20px 21px;border-radius:18px;box-shadow:var(--shadow);position:relative;overflow:hidden}.stat small{display:block;font-size:11px;color:#73859a;font-weight:700;margin-bottom:11px}.stat strong{font:800 28px/1 'Plus Jakarta Sans';color:#1c3854;letter-spacing:-1px}.stat .stat-icon{position:absolute;right:16px;top:17px;width:38px;height:38px;border-radius:13px;background:#edf4f9;display:grid;place-items:center;font-size:18px;color:#2a6382}.stat .trend{font-size:10px;color:#91a0ae;margin-top:8px}.toolbar{padding:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}.toolbar .search{flex:2 1 250px;position:relative}.search .control{padding-left:37px}.search:before{content:'⌕';position:absolute;top:6px;left:14px;font-size:25px;color:#91a2b2;line-height:1}.toolbar select{flex:1 1 150px;max-width:240px}.tablebox{overflow:auto;border-top:1px solid #eaf0f5}.datatable{border-collapse:collapse;width:100%;text-align:left;min-width:815px}.datatable th{background:#f8fafc;color:#7d8b9c;text-transform:uppercase;letter-spacing:.6px;font-size:10px;font-weight:800;padding:16px 17px;border-bottom:1px solid #e7edf4;white-space:nowrap}.datatable td{padding:16px 17px;border-bottom:1px solid #edf2f6;font-size:12px;color:#4a6077}.datatable tbody tr:hover{background:#fafcff}.datatable tbody tr:last-child td{border-bottom:0}.strong-cell{font-weight:800;color:#28435e!important}.secondary-cell{display:block;color:#96a3b2;font-size:10px;font-weight:600;margin-top:4px}.pill{display:inline-flex;padding:6px 10px;border-radius:50px;font-size:10px;font-weight:800;white-space:nowrap}.pill.pending{background:#fff3de;color:#af7521}.pill.done{background:#e7f7ee;color:#218558}.pill.review{background:#e9f3ff;color:#2a78b3}.pill.fix{background:#fff0f0;color:#bc5c63}.tablefoot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 19px;border-top:1px solid #eaf0f5;color:#8998a8;font-size:11px}.pagination{display:flex;gap:6px}.pagination button{background:#fff;border:1px solid #dce6ee;color:#4b657c;border-radius:8px;min-width:31px;height:31px;font-size:12px}.pagination button.selected{background:#174366;color:#fff}.empty{padding:38px 15px;text-align:center;color:#7b90a3}.admin-auth{padding:26px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:20px}.auth-icon{width:50px;height:50px;flex:none;background:#eaf2f8;border-radius:14px;display:grid;place-items:center;color:#345e7b;font-size:24px}.authtext{display:flex;gap:14px;align-items:center}.authtext strong{display:block;font-size:14px}.authtext p{font-size:11px;color:#8294a5;margin-top:4px}.auth-buttons{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.modaloverlay{position:fixed;inset:0;background:#0b1b2b89;backdrop-filter:blur(4px);z-index:100;display:flex;justify-content:flex-end}.modal{width:min(590px,100%);background:white;display:flex;flex-direction:column;box-shadow:-20px 0 80px #0d254344;overflow:auto}.modalhead{display:flex;justify-content:space-between;align-items:flex-start;padding:26px 27px;border-bottom:1px solid var(--line)}.modalhead h3{font-size:19px}.modalhead p{color:#8797a8;font-size:11px;margin-top:4px}.close{border:0;background:#f1f5f8;border-radius:11px;height:35px;width:35px;font-size:24px;color:#607489}.modalbody{flex:1;overflow:auto;padding:25px 27px}.modalsection{font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#54809d;margin:4px 0 14px}.modalbody .fields{gap:16px}.modalfooter{padding:17px 27px;border-top:1px solid var(--line);display:flex;gap:9px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.modalfooter .btn-red{margin-right:auto}.toast{position:fixed;z-index:200;right:22px;bottom:22px;max-width:390px;padding:15px 18px;border-radius:13px;background:#163f61;color:#fff;box-shadow:0 12px 30px #102a4652;font-size:12px;display:none}.toast.visible{display:block}.honey{position:absolute!important;left:-9999px!important;opacity:0!important;pointer-events:none!important}
+@media(max-width:900px){.split{grid-template-columns:1fr}.sidecard{position:static;display:none}.page{padding:20px 16px 40px}.headband{padding:29px;min-height:auto}.hero-art{min-width:85px}.hero-icon{width:80px;height:80px}.hero-icon svg{width:40px;height:40px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.navwrap{padding:0 16px}.admin-top{align-items:flex-start;flex-direction:column}}
+@media(max-width:540px){body{font-size:13px}.topbar{height:65px}.brand-main{font-size:11px}.brand-sub{font-size:10px}.logo{height:38px;width:38px;font-size:12px;border-radius:11px}.navlinks{gap:3px}.navlink{padding:9px 8px;font-size:10px}.headband{padding:25px 21px;border-radius:18px}.headband h1{font-size:24px}.headband p{font-size:11px}.hero-art{display:none}.fields{grid-template-columns:1fr;gap:15px}.formcard{padding:22px 19px;border-radius:17px}.section-head{margin-bottom:19px}.section-head h2{font-size:15px}.section-head p{font-size:10px}.consent{padding:15px}.form-actions{justify-content:stretch}.form-actions .btn{flex:1}.stats{gap:9px}.stat{padding:17px 15px;border-radius:14px}.stat strong{font-size:23px}.stat .stat-icon{font-size:14px;width:29px;height:29px;right:10px;top:13px}.toolbar select{max-width:none}.admin-auth{flex-direction:column;align-items:stretch}.admin-title{font-size:21px}.modalhead,.modalbody,.modalfooter{padding-left:20px;padding-right:20px}.kicker{font-size:10px}}
+/* Wizard - only one stage of the public form is visible at a time. */
+.batch-public-banner{display:flex;align-items:center;gap:14px;background:#eaf2fa;border:1px solid #d6e5f2;border-radius:15px;padding:15px 18px;color:#1d4969}.batch-public-icon{display:grid;place-items:center;flex:none;background:#d7e6f4;color:#1d5577;border-radius:12px;width:42px;height:42px;font-size:22px}.batch-public-banner strong,.batch-public-banner span:last-child{display:block}.batch-public-banner strong{font-size:12px}.batch-public-banner span:last-child{color:#647e94;font-size:11px;margin-top:2px}
+.wizard-top{background:#fff;border:1px solid #e0eaf2;border-radius:18px;padding:21px 25px;box-shadow:var(--shadow)}.wizard-topline{display:flex;align-items:center;justify-content:space-between;gap:15px}.wizard-kicker{font-size:10px;letter-spacing:1.6px;font-weight:900;color:#7995aa}.wizard-top h2{font-size:17px;color:#173a57;margin:5px 0 0}.wizard-count{border-radius:10px;background:#edf5fb;color:#215375;padding:8px 12px;font-weight:900;font-size:12px;white-space:nowrap}.wizard-track{background:#e7eef4;height:8px;border-radius:100px;overflow:hidden;margin-top:17px}.wizard-track>span{display:block;height:100%;border-radius:100px;background:linear-gradient(90deg,#224e72,#eab448);transition:width .25s}.wizard-progress-caption{display:flex;justify-content:space-between;margin-top:8px;color:#899aab;font-size:10px;font-weight:700}.wizard-nav{display:flex;gap:15px;justify-content:space-between;align-items:center;padding:4px 2px}.wizard-nav-right{display:flex;gap:9px;margin-left:auto}.step.completed .step-num{background:#e4f5ee;color:#15805a}.step.completed strong{color:#16845b}.review-summary{border:1px solid #e1eaf2;border-radius:14px;overflow:hidden}.review-group{background:#edf4fa;padding:15px 17px}.review-group strong{display:block;font-size:12px;color:#214b6b}.review-group small{color:#7690a4;font-size:11px}.review-line{padding:11px 17px;display:flex;justify-content:space-between;gap:16px;align-items:flex-start;border-top:1px solid #edf1f5;font-size:11px}.review-line span{color:#71859a;max-width:45%}.review-line strong{color:#1c3a54;max-width:55%;text-align:right;overflow-wrap:anywhere}
+/* Batch selector and management cards */
+.batch-strip{padding:22px 25px;margin-bottom:22px;background:linear-gradient(120deg,#fff,#f6faff)}.batch-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.batch-head h2{font-size:18px;margin:4px 0 5px}.batch-head p{font-size:11px;color:#74889a}.batch-eyebrow{color:#387099;letter-spacing:1.3px;font-size:10px;font-weight:900}.batch-state{border-radius:100px;background:#ecf1f6;padding:8px 12px;font-size:11px;font-weight:800;white-space:nowrap}.batch-open{background:#e5f5e9;color:#168052}.batch-closed{background:#fff1ea;color:#af6545}.batch-actions{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin-top:19px}.batch-actions .batch-picker{flex:1 1 310px}.batch-actions .batch-picker span{font-weight:900;color:#2e526e;font-size:11px}.batch-actions button{margin-bottom:1px}.batch-hint{font-size:11px;color:#647e92;margin-top:12px}.batch-manager{margin-bottom:24px;padding:24px}.batch-manager-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px}.batch-manager-head strong{font-size:16px}.batch-manager-head p{font-size:11px;color:#8193a4;margin-top:4px}.batch-form{background:#f7fafd;border:1px solid #e3edf6;border-radius:14px;padding:20px;margin-bottom:18px}.batch-form-foot{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:18px}.batch-form-foot span{color:#8292a0;margin-right:auto;font-size:11px}.batch-table-wrap{overflow-x:auto}.batch-table{min-width:710px}.batch-table td{padding:12px 13px}.batch-row-actions{display:flex;gap:6px}.pdf-panel{padding:21px 24px;margin:0 0 20px;display:flex;justify-content:space-between;align-items:center;gap:20px}.pdf-panel strong{font-size:14px}.pdf-panel p{font-size:11px;color:#76889a;margin-top:5px;max-width:460px}.pdf-settings{display:flex;align-items:end;gap:10px;flex-wrap:wrap}.pdf-settings .field{min-width:240px}.pdf-settings .field span{font-size:11px;font-weight:700}.pdf-settings .control{min-width:230px}
+@media(max-width:900px){.pdf-panel{flex-direction:column;align-items:stretch}.pdf-settings{justify-content:flex-start}}
+@media(max-width:540px){.batch-strip,.batch-manager{padding:18px}.batch-head h2{font-size:16px}.batch-head p{max-width:285px}.batch-actions{align-items:stretch}.batch-actions .btn{flex:1}.batch-form{padding:15px}.batch-form-foot{flex-wrap:wrap}.batch-form-foot span{width:100%}.wizard-top{padding:18px 18px}.wizard-top h2{font-size:15px}.wizard-count{font-size:11px;padding:7px 9px}.wizard-nav{gap:8px;flex-wrap:wrap}.wizard-nav .btn{padding:10px 12px;font-size:11px}.wizard-nav-right{margin-left:auto;gap:6px}.wizard-nav-right #resetBtn{display:none}.review-line{gap:10px}.batch-public-banner{padding:13px}.pdf-settings{flex-direction:column;align-items:stretch}.pdf-settings .field,.pdf-settings .control{min-width:0}.pdf-settings button{width:100%}}
+
+</style>
+</head>
+<body>
+<header class="topbar"><div class="navwrap">
+  <a href="index.html" class="brand"><span class="logo">RMMJ</span><span><span class="brand-main">PENGUMPULAN MAKLUMAT RMMJ</span><span class="brand-sub" style="display:block">PORTAL PEMOHON</span></span></a>
+  <nav class="navlinks" aria-label="Menu utama"><a class="navlink active" href="index.html">Portal Pemohon</a><a class="navlink adminlink" href="admin.html">Portal Admin</a></nav>
+</div></header>
+<main class="page">
+ <div class="headband">
+  <div class="hero-content"><div class="eyebrow">Portal Pengumpulan Maklumat</div><h1>Pengumpulan Maklumat<br>Berkaitan Permohonan RMMJ</h1><p>Sila lengkapkan maklumat diri, pasangan (jika berkaitan) dan pilihan daerah bagi tujuan pengumpulan maklumat permohonan Rumah Mampu Milik Johor.</p></div>
+  <div class="hero-art" aria-hidden="true"><div class="hero-icon"><svg viewBox="0 0 64 64"><path d="M9 29 32 11l23 18v25H9z"/><path d="M23 54V36h18v18M19 27h8v7h-8zM37 27h8v7h-8z"/><path d="M4 30 32 7l28 23"/></svg></div></div>
+ </div>
+ <div class="kicker"><b>Portal Pemohon</b><span class="dot"></span> Borang Pengumpulan Maklumat <span id="modeChip" class="demo-chip hidden">MOD DEMO</span></div>
+ <div class="split">
+  <aside class="sidecard"><div class="sidetitle">Panduan Pengisian</div><p class="sidetext">Lengkapkan setiap langkah dengan menekan butang Seterusnya.</p>
+   <div class="timeline"><div class="step active"><span class="step-num">01</span><span><strong>Maklumat Diri</strong><small>Nama, KP dan pekerjaan</small></span></div><div class="step"><span class="step-num">02</span><span><strong>Maklumat Keluarga</strong><small>Status dan pendapatan</small></span></div><div class="step"><span class="step-num">03</span><span><strong>Maklumat Perumahan</strong><small>Akaun e-Rumah dan daerah</small></span></div><div class="step"><span class="step-num">04</span><span><strong>Semak & Hantar</strong><small>Semak butiran dan pengesahan</small></span></div></div>
+   <div class="sidefoot"><strong>Maklumat dilindungi</strong><br>Butiran anda digunakan bagi tujuan pengumpulan maklumat berkaitan RMMJ dan hanya diakses oleh pegawai yang diberi kebenaran.</div>
+  </aside>
+  <div class="formarea">
+   <div id="demoNotice" class="notice hidden"><strong>Pratonton UI sahaja.</strong> Penghantaran dalam mod demo tidak menyimpan sebarang maklumat ke Google Sheets.</div>
+   <div class="batch-public-banner" id="batchPublicBanner"><span class="batch-public-icon">▣</span><div><strong>Batch Pengumpulan Maklumat</strong><span id="publicBatchInfo">Memuatkan maklumat batch...</span></div></div>
+   <div id="formError" class="alert hidden" role="alert"></div>
+   <div class="wizard-top" aria-live="polite"><div class="wizard-topline"><div><span class="wizard-kicker">PROSES PENGISIAN BORANG</span><h2 id="wizardTitle">Langkah 1: Maklumat Diri</h2></div><span class="wizard-count" id="wizardCounter">1 / 4</span></div><div class="wizard-track" role="progressbar" id="wizardBar" aria-label="Kemajuan pengisian" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"><span id="wizardFill" style="width:25%"></span></div><div class="wizard-progress-caption"><span id="wizardProgressCaption">25% kemajuan</span><span>4 langkah pengisian</span></div></div>
+   <form id="publicForm" method="POST" action="#" accept-charset="UTF-8" novalidate>
+    <input type="hidden" name="batchId" id="batchId">
+    <input type="hidden" name="submissionTime" id="submissionTime">
+    <div class="honey" aria-hidden="true"><label for="website">Laman web</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+    <div class="formarea">
+     <section class="formcard" data-form-step="0"><div class="section-head"><span class="section-symbol">01</span><div><h2>Maklumat Diri</h2><p>Butiran diri dan perkhidmatan semasa pemohon</p></div></div>
+      <div class="fields"><div class="field full"><label for="name">Nama Penuh <span class="req">*</span></label><input class="control" id="name" name="name" maxlength="120" placeholder="Nama penuh seperti kad pengenalan" required autocomplete="name"></div>
+       <div class="field"><label for="ic">No. Kad Pengenalan <span class="req">*</span></label><input class="control" id="ic" name="ic" inputmode="numeric" maxlength="14" placeholder="Contoh: 900101-01-1234" required></div>
+       <div class="field"><label for="phone">No. Telefon <span class="req">*</span></label><input class="control" id="phone" name="phone" inputmode="tel" maxlength="17" placeholder="Contoh: 0123456789" required autocomplete="tel"></div>
+       <div class="field"><label for="department">Jabatan Semasa <span class="req">*</span></label><input class="control" id="department" name="department" maxlength="150" placeholder="Jabatan / Bahagian / Unit" required></div>
+       <div class="field"><label for="position">Jawatan <span class="req">*</span></label><input class="control" id="position" name="position" maxlength="120" placeholder="Jawatan semasa" required></div>
+      </div>
+     </section>
+     <section class="formcard hidden" data-form-step="1"><div class="section-head"><span class="section-symbol">02</span><div><h2>Maklumat Keluarga & Pendapatan</h2><p>Maklumat pasangan hanya diperlukan sekiranya berkahwin</p></div></div>
+      <div class="fields"><div class="field"><label for="maritalStatus">Status Perkahwinan <span class="req">*</span></label><select class="control select" id="maritalStatus" name="maritalStatus" required></select></div>
+       <div class="field"><label for="householdIncome">Jumlah Pendapatan Isi Rumah (RM) <span class="req">*</span></label><input class="control" id="householdIncome" name="householdIncome" type="number" min="0" max="99999999" step="0.01" placeholder="Contoh: 4500.00" required></div></div>
+      <div class="spouse hidden" id="spousePanel"><div class="spouse-h">Maklumat Pasangan</div><div class="fields"><div class="field full"><label for="spouseName">Nama Pasangan <span class="req">*</span></label><input class="control" id="spouseName" name="spouseName" maxlength="120" placeholder="Nama penuh pasangan"></div><div class="field"><label for="spouseIc">No. KP Pasangan <span class="req">*</span></label><input class="control" id="spouseIc" name="spouseIc" inputmode="numeric" maxlength="14" placeholder="12 digit"></div><div class="field"><label for="spousePhone">No. Telefon Pasangan <span class="req">*</span></label><input class="control" id="spousePhone" name="spousePhone" inputmode="tel" maxlength="17" placeholder="Contoh: 0123456789"></div></div></div>
+     </section>
+     <section class="formcard hidden" data-form-step="2"><div class="section-head"><span class="section-symbol">03</span><div><h2>Maklumat Berkaitan Perumahan</h2><p>Maklumat e-Rumah, pemilikan dan lokasi pilihan RMMJ</p></div></div>
+      <div class="fields"><div class="field"><label for="hasERumah">Telah Berdaftar & Mempunyai Akaun e-Rumah? <span class="req">*</span></label><select class="control select" id="hasERumah" name="hasERumah" required><option value="">-- Sila pilih --</option><option>Ya</option><option>Tidak</option></select></div>
+       <div class="field"><label for="hasOwnedProperty">Pernah Memiliki Harta / Rumah Lain? <span class="req">*</span></label><select class="control select" id="hasOwnedProperty" name="hasOwnedProperty" required><option value="">-- Sila pilih --</option><option>Ya</option><option>Tidak</option></select></div>
+       <div class="field full"><label for="district">Lokasi Daerah Berminat untuk Permohonan RMMJ <span class="req">*</span></label><select class="control select" id="district" name="district" required></select></div></div>
+     </section>
+     <section class="formcard hidden" data-form-step="3"><div class="section-head"><span class="section-symbol">04</span><div><h2>Semak & Hantar</h2><p>Semak semua maklumat sebelum menghantar kepada urus setia</p></div></div><div id="reviewSummary" class="review-summary" aria-label="Ringkasan maklumat yang diisi"></div>
+     <div class="consent"><p><strong>Notis Pengumpulan Maklumat:</strong> Maklumat yang diberikan digunakan bagi urusan pengumpulan dan semakan maklumat berkaitan permohonan RMMJ. Data peribadi tidak dipaparkan secara terbuka. Pengumpulan maklumat ini tidak bermaksud permohonan atau kelayakan RMMJ telah diluluskan.</p><label class="checkline"><input id="confirmation" name="confirmation" type="checkbox" value="Ya" required><span>Saya mengesahkan maklumat yang diberikan adalah benar dan bersetuju maklumat ini diproses bagi tujuan yang dinyatakan. <span class="req">*</span></span></label></div>
+     </section>
+     <div class="wizard-nav"><button type="button" id="backBtn" class="btn btn-outline hidden">← Kembali</button><div class="wizard-nav-right"><button type="reset" id="resetBtn" class="btn btn-outline">Kosongkan Borang</button><button type="button" id="nextBtn" class="btn btn-primary">Seterusnya <span aria-hidden="true">➜</span></button><button type="submit" id="submitBtn" class="btn btn-primary hidden">Hantar Maklumat <span aria-hidden="true">➜</span></button></div></div>
+    </div>
+   </form>
+   <div id="demoSuccess" class="success hidden" role="status"><div class="success-icon">✓</div><h2>Maklumat Berjaya Dihantar</h2><p>Ini ialah simulasi paparan pengesahan. Data demo tidak disimpan ke dalam pangkalan data.</p><div class="ref" id="demoRef">DEMO-RMMJ-0001</div><button id="againBtn" class="btn btn-primary" type="button">Isi Borang Baharu</button></div>
+  </div>
+ </div>
+</main>
+<footer class="footer">© 2026 Pengumpulan Maklumat Berkaitan Permohonan RMMJ <div><strong>Membangun, Melindungi, Menyejahtera</strong></div></footer>
+<div id="toast" class="toast" role="status"></div>
+
+<script>
+/* ==== KONFIGURASI ==== */
+/* ============================================================
+   TETAPAN SISTEM - UBAH 3 NILAI SAHAJA (TIADA PASSWORD DI SINI)
+   1) publicEndpoint  = URL Apps Script yang berakhir dengan /exec
+   2) spreadsheetId   = ID Google Sheet (di antara /d/ dan /edit)
+   3) googleClientId = OAuth Client ID jenis Web application
+   Nilai ini ialah pengecam awam, BUKAN rahsia. Jangan isi
+   Client Secret, token atau kata laluan dalam fail HTML.
+   ============================================================ */
+window.RMMJ_CONFIG = Object.freeze({
+  title: 'Pengumpulan Maklumat Berkaitan Permohonan RMMJ',
+  publicEndpoint: 'TAMPAL_URL_APPS_SCRIPT_EXEC',
+  spreadsheetId: 'TAMPAL_ID_GOOGLE_SHEET',
+  googleClientId: 'TAMPAL_CLIENT_ID_GOOGLE',
+  batchSheet: 'BATCHES',
+  districts: ['Johor Bahru','Batu Pahat','Kluang','Kulai','Kota Tinggi','Mersing','Muar','Pontian','Segamat','Tangkak'],
+  maritalStatuses: ['Bujang','Berkahwin','Duda','Janda','Balu'],
+  reviewStatuses: ['Belum Disemak','Dalam Semakan','Lengkap','Perlu Pembetulan']
+});
+</script>
+<script>
+/* ==== FUNGSI ASAS ==== */
+(function(){
+ 'use strict';
+ window.RMMJ = {
+   config:window.RMMJ_CONFIG,
+   $:id=>document.getElementById(id),
+   demo: new URLSearchParams(location.search).get('demo')==='1',
+   isConfigured:s=>typeof s==='string' && s && !s.startsWith('TAMPAL_'),
+   escape:s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),
+   money:n=>Number(n||0).toLocaleString('ms-MY',{minimumFractionDigits:2,maximumFractionDigits:2}),
+   formatIc:n=>{let s=String(n??'').replace(/\D/g,'');return s.length===12?s.slice(0,6)+'-'+s.slice(6,8)+'-'+s.slice(8):String(n??'')},
+   options:(id,values,placeholder='-- Sila pilih --')=>{let e=document.getElementById(id);if(!e)return;e.replaceChildren();e.add(new Option(placeholder,''));values.forEach(v=>e.add(new Option(v,v)))},
+   toggle:(id,visible)=>document.getElementById(id)?.classList.toggle('hidden',!visible),
+   toast:(message)=>{let el=document.getElementById('toast');if(!el)return;el.textContent=message;el.classList.add('visible');clearTimeout(window._rmmjToast);window._rmmjToast=setTimeout(()=>el.classList.remove('visible'),4500)}
+ };
+})();
+
+</script>
+<script>
+/* ==== PORTAL PEMOHON ==== */
+(function(){
+ 'use strict';
+ const R=window.RMMJ,C=R.config,$=R.$;
+ const endpointConfigured=R.isConfigured(C.publicEndpoint)&&/^https:\/\/script\.google\.com\/macros\/s\//.test(C.publicEndpoint)&&/\/exec(?:\?.*)?$/.test(C.publicEndpoint);
+ const demo=R.demo||!endpointConfigured;
+ const params=new URLSearchParams(location.search);
+ const batchId=(params.get('batch')|| (demo?'MAIJ-01':'')).toUpperCase().trim();
+ const validBatch=/^[A-Z0-9_-]{3,40}$/.test(batchId);
+ let step=0;
+ const titles=['Maklumat Diri','Maklumat Keluarga & Pendapatan','Maklumat Perumahan','Semak & Hantar'];
+ const sections=[...document.querySelectorAll('[data-form-step]')];
+ R.options('maritalStatus',C.maritalStatuses);
+ R.options('district',C.districts);
+ if(demo){R.toggle('modeChip',true);R.toggle('demoNotice',true);}
+ $('submissionTime').value=String(Date.now());
+ $('batchId').value=validBatch?batchId:'';
+ $('publicBatchInfo').textContent=validBatch ? (batchId==='MAIJ-01'?'Batch 01 - MAIJ · ID: '+batchId:'ID Batch: '+batchId) : 'Tiada batch dinyatakan dalam pautan ini.';
+ if(!validBatch){R.toggle('publicForm',false);showError('Pautan khusus batch diperlukan untuk mengisi maklumat. Sila dapatkan pautan daripada urus setia.');}
+ if(endpointConfigured) $('publicForm').action=C.publicEndpoint;
+ function spouseState(){
+   const married=$('maritalStatus').value==='Berkahwin';
+   R.toggle('spousePanel',married);
+   ['spouseName','spouseIc','spousePhone'].forEach(id=>{$(id).required=married;if(!married)$(id).value='';});
+ }
+ $('maritalStatus').addEventListener('change',spouseState);spouseState();
+ function showError(msg){$('formError').textContent=msg;R.toggle('formError',true);$('formError').scrollIntoView({behavior:'smooth',block:'nearest'});}
+ function hideError(){R.toggle('formError',false);}
+ function updateWizard(){
+   sections.forEach((el,i)=>el.classList.toggle('hidden',i!==step));
+   document.querySelectorAll('.timeline .step').forEach((el,i)=>{el.classList.toggle('active',i===step);el.classList.toggle('completed',i<step);});
+   $('wizardTitle').textContent=`Langkah ${step+1}: ${titles[step]}`;
+   $('wizardCounter').textContent=`${step+1} / ${sections.length}`;
+   const percentage=Math.round((step+1)/sections.length*100);
+   $('wizardFill').style.width=percentage+'%';
+   $('wizardBar').setAttribute('aria-valuenow',String(percentage));
+   $('wizardProgressCaption').textContent=percentage+'% kemajuan';
+   R.toggle('backBtn',step>0);R.toggle('nextBtn',step<sections.length-1);R.toggle('submitBtn',step===sections.length-1);
+   if(step===sections.length-1)buildReview();
+ }
+ function goStep(index){step=Math.max(0,Math.min(index,sections.length-1));hideError();updateWizard();$('wizardTitle').scrollIntoView({behavior:'smooth',block:'center'});}
+ function invalid(el,msg,report){
+   if(report){el.focus();el.reportValidity();if(msg)showError(msg);}return false;
+ }
+ function checkStep(i,report){
+   const section=sections[i];
+   if(!section)return false;
+   for(const field of section.querySelectorAll('input,select,textarea')){
+     if(field.disabled||field.closest('#spousePanel.hidden'))continue;
+     if(!field.checkValidity())return invalid(field,'Sila lengkapkan maklumat wajib di bahagian ini.',report);
+   }
+   if(i===0){
+     if(!/^\d{12}$/.test($('ic').value.replace(/\D/g,'')))return invalid($('ic'),'No. Kad Pengenalan perlu mengandungi 12 digit.',report);
+     if(!/^\+?\d{9,13}$/.test($('phone').value.replace(/[ ()-]/g,'')))return invalid($('phone'),'Sila semak nombor telefon.',report);
+   }
+   if(i===1&&$('maritalStatus').value==='Berkahwin'){
+     if(!/^\d{12}$/.test($('spouseIc').value.replace(/\D/g,'')))return invalid($('spouseIc'),'No. KP pasangan mesti mengandungi 12 digit.',report);
+     if(!/^\+?\d{9,13}$/.test($('spousePhone').value.replace(/[ ()-]/g,'')))return invalid($('spousePhone'),'Sila semak nombor telefon pasangan.',report);
+   }
+   return true;
+ }
+ function reviewLine(label,value){return `<div class="review-line"><span>${R.escape(label)}</span><strong>${R.escape(value||'-')}</strong></div>`;}
+ function buildReview(){
+   let rows=[
+    ['Nama Penuh',$('name').value],['No. Kad Pengenalan',R.formatIc($('ic').value)],['No. Telefon',$('phone').value],
+    ['Jabatan Semasa',$('department').value],['Jawatan',$('position').value],['Status Perkahwinan',$('maritalStatus').value]
+   ];
+   if($('maritalStatus').value==='Berkahwin')rows.push(['Nama Pasangan',$('spouseName').value],['No. KP Pasangan',R.formatIc($('spouseIc').value)],['Telefon Pasangan',$('spousePhone').value]);
+   rows.push(['Pendapatan Isi Rumah','RM '+R.money($('householdIncome').value)],['Akaun e-Rumah',$('hasERumah').value],['Pernah Memiliki Rumah',$('hasOwnedProperty').value],['Daerah Minat',$('district').value]);
+   $('reviewSummary').innerHTML='<div class="review-group"><strong>Batch: '+R.escape(batchId)+'</strong><small>Maklumat ini akan disimpan dalam batch berkenaan sahaja.</small></div>'+rows.map(r=>reviewLine(...r)).join('');
+ }
+ $('nextBtn').addEventListener('click',()=>{if(checkStep(step,true))goStep(step+1)});
+ $('backBtn').addEventListener('click',()=>goStep(step-1));
+ $('publicForm').addEventListener('reset',()=>{setTimeout(()=>{spouseState();$('batchId').value=batchId;$('submissionTime').value=String(Date.now());step=0;hideError();updateWizard();},0);});
+ $('publicForm').addEventListener('submit',function(ev){
+   ev.preventDefault();hideError();
+   if(!validBatch){showError('Sila dapatkan pautan batch yang sah daripada urus setia.');return;}
+   for(let i=0;i<sections.length;i++){
+     if(!checkStep(i,false)){goStep(i);checkStep(i,true);return;}
+   }
+   if(demo){R.toggle('publicForm',false);R.toggle('demoSuccess',true);R.toggle('demoNotice',false);$('demoRef').textContent='DEMO-'+batchId+'-0001';$('demoSuccess').scrollIntoView({behavior:'smooth',block:'center'});return;}
+   $('submitBtn').disabled=true;$('submitBtn').textContent='Menghantar maklumat...';
+   // Submit through normal HTML form POST to Apps Script: avoids CORS restrictions.
+   // Submission success is confirmed on the Google Apps Script receipt page.
+   HTMLFormElement.prototype.submit.call($('publicForm'));
+ });
+ $('againBtn').addEventListener('click',()=>{
+   $('publicForm').reset();R.toggle('publicForm',true);R.toggle('demoSuccess',false);R.toggle('demoNotice',true);
+   window.scrollTo({top:0,behavior:'smooth'});
+ });
+ updateWizard();
+})();
+
+</script>
+</body></html>
