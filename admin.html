@@ -150,6 +150,17 @@ body{background:#f6f8fb;color:#17314d} .topbar{height:61px;position:sticky;backg
  .bulkbar{padding:10px 12px}.tablefoot{padding:12px}.tablebox .datatable tbody td .secondary-cell{font-size:10px}
 }
 
+
+/* SENARAI MENGIKUT BATCH — buka satu kotak untuk melihat rekod */
+.batch-accordion-intro{margin:17px 0 11px}.batch-accordion-intro h2{font-size:17px;color:#1d3950;margin:0 0 5px}.batch-accordion-intro p{font-size:12px;color:#74889b;line-height:1.5}
+.batch-card-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:12px;margin-bottom:17px}
+.batch-open-card{border:1px solid #dfe7ee;background:#fff;border-radius:15px;padding:15px 16px;min-height:86px;display:flex;align-items:center;gap:12px;text-align:left;width:100%;color:#1b3a54;cursor:pointer;box-shadow:0 3px 12px #19385508;transition:border-color .15s,transform .15s,background .15s}
+.batch-open-card:hover{border-color:#97b5ce;transform:translateY(-1px)}.batch-open-card.is-open{background:#edf6ff;border-color:#78acd0}
+.batch-card-icon{height:39px;width:39px;border-radius:12px;display:grid;place-items:center;background:#ecf4fa;color:#1e587e;flex:none}
+.batch-card-text{flex:1;min-width:0}.batch-card-text strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}.batch-card-text small{display:block;font-size:11px;color:#8192a4;margin-top:5px}.batch-chevron{font-size:20px;color:#66839c}
+#recordsPanel{padding:17px 15px 22px;border:1px solid #dfe8f1;border-radius:16px;background:#fbfdff;margin-bottom:15px}
+#recordsPanel .admin-top{margin-bottom:14px}.batch-card-list+.hidden{display:none!important}
+@media(max-width:650px){.batch-card-list{grid-template-columns:1fr;gap:8px}.batch-open-card{min-height:70px;padding:10px 12px}#recordsPanel{padding:12px 8px}.batch-accordion-intro{margin-top:12px}}
 </style></head>
 <body>
 <div class="admin-progress" id="adminProgress" aria-hidden="true"><span></span></div>
@@ -194,6 +205,9 @@ body{background:#f6f8fb;color:#17314d} .topbar{height:61px;position:sticky;backg
   <form id="batchForm" class="batch-form"><div class="fields"><div class="field"><label for="batchName">Nama Batch *</label><input id="batchName" class="control" maxlength="90" placeholder="Contoh: Batch 02 - Jabatan Baharu" required></div><div class="field"><label for="batchOrg">Jabatan / Organisasi *</label><input id="batchOrg" class="control" maxlength="100" placeholder="Nama jabatan terlibat" required></div><div class="field"><label for="batchStart">Tarikh Mula (pilihan)</label><input id="batchStart" class="control" type="date"></div><div class="field"><label for="batchEnd">Tarikh Tamat (pilihan)</label><input id="batchEnd" class="control" type="date"></div><div class="field"><label for="batchStatus">Status</label><select id="batchStatus" class="control select"><option>Dibuka</option><option>Ditutup</option></select></div><div class="field"><label for="batchNotes">Catatan</label><input id="batchNotes" class="control" maxlength="200" placeholder="Catatan dalaman (pilihan)"></div></div><div class="batch-form-foot"><span id="batchFormMode">Mencipta batch baharu</span><button class="btn btn-outline btn-small" type="button" id="cancelBatchEdit">Reset</button><button class="btn btn-primary btn-small" id="saveBatchBtn" type="submit">+ Cipta Batch</button></div></form>
   <div class="batch-table-wrap"><table class="datatable batch-table"><thead><tr><th>ID Batch</th><th>Batch / Organisasi</th><th>Tempoh</th><th>Status</th><th>Tindakan</th></tr></thead><tbody id="batchTableBody"></tbody></table></div>
   </section>
+  <section class="batch-accordion-intro"><h2>Senarai Mengikut Batch</h2><p>Tekan kotak batch untuk membuka atau menutup senarai pemohon. Rekod setiap batch dipaparkan secara berasingan.</p></section>
+  <div id="batchCardList" class="batch-card-list" aria-label="Buka senarai mengikut batch"></div>
+  <div id="recordsPanel" class="hidden">
   <div class="admin-top"><div><h2 class="admin-title">Ringkasan Maklumat Pemohon</h2><div id="activeBatchSub" class="admin-sub">Rekod pengumpulan maklumat dan status semakan bagi batch terpilih.</div></div><div class="admin-actions"><button id="reloadBtn" type="button" class="btn btn-outline btn-small">↻ Muat Semula</button><button id="exportBtn" type="button" class="btn btn-outline btn-small">⇩ Eksport CSV</button><button id="pdfBtn" type="button" class="btn btn-gold btn-small">▤ Laporan PDF</button></div></div>
   <div id="pdfPanel" class="pdf-panel card hidden"><div><strong>Jana Laporan PDF</strong><p>Laporan KHUSUS bagi batch yang dipilih, mengikut carian dan tapisan semasa. Data sebenar adalah sulit dan khusus untuk pegawai yang diberi kuasa.</p></div><div class="pdf-settings"><label class="field"><span>Jenis laporan</span><select id="pdfType" class="control select"><option value="summary">Ringkasan & Senarai Pemohon</option><option value="detail">Butiran Lengkap Pemohon</option></select></label><button type="button" id="generatePdfBtn" class="btn btn-primary btn-small">Muat Turun PDF</button><button type="button" id="closePdfBtn" class="btn btn-outline btn-small">Tutup</button></div></div>
   <div class="stats"><div class="stat"><small>Jumlah Rekod</small><strong id="totalCount">0</strong><div class="stat-icon">▤</div><div class="trend">Rekod dihantar</div></div><div class="stat"><small>Belum Disemak</small><strong id="pendingCount">0</strong><div class="stat-icon">◷</div><div class="trend">Menunggu tindakan</div></div><div class="stat"><small>Ada Akaun e-Rumah</small><strong id="eRumahCount">0</strong><div class="stat-icon">⌂</div><div class="trend">Berdasarkan pengakuan</div></div><div class="stat"><small>Rekod Lengkap</small><strong id="completeCount">0</strong><div class="stat-icon">✓</div><div class="trend">Semakan pentadbiran</div></div></div>
@@ -203,6 +217,7 @@ body{background:#f6f8fb;color:#17314d} .topbar{height:61px;position:sticky;backg
    <div class="tablefoot"><span id="tableInfo">Tiada rekod</span><div id="pagination" class="pagination"></div></div>
   </div>
   <div class="notice" style="margin-top:18px"><strong>Perhatian:</strong> Status “Lengkap” bermaksud rekod telah disemak oleh pentadbir sahaja; ia bukan pengesahan kelayakan atau kelulusan RMMJ. Akses, penyuntingan dan eksport rekod hanya dibenarkan selepas log masuk admin melalui Apps Script.</div>
+  </div>
  </div>
 </main>
 <footer class="footer">© 2026 Pengumpulan Maklumat Berkaitan Permohonan RMMJ <div><strong>Membangun, Melindungi, Menyejahtera</strong></div></footer>
@@ -1577,7 +1592,7 @@ window.RMMJ_QR = {make:function(value){var q=new QRCode(0,QRErrorCorrectLevel.M)
  const BATCH_FIELDS=['id','name','organization','startDate','endDate','status','sheetName','createdAt','updatedAt','notes'];
  const INPUTS=['name','ic','phone','department','position','maritalStatus','spouseName','spouseIc','spousePhone','householdIncome','hasERumah','hasOwnedProperty','district','reviewStatus','adminNotes'];
  const configured=R.isConfigured(C.publicEndpoint);
- const state={token:'',adminEmail:'',batches:[],selectedBatchId:'',records:[],sheetGid:null,page:1,pageSize:7,editIndex:null,editingBatchId:null,loading:false,selectedIds:new Set()};
+ const state={token:'',adminEmail:'',batches:[],selectedBatchId:'',openBatchId:'',records:[],sheetGid:null,page:1,pageSize:7,editIndex:null,editingBatchId:null,loading:false,selectedIds:new Set()};
  R.options('districtFilter',C.districts,'Semua Daerah');R.options('statusFilter',C.reviewStatuses,'Semua Status');
  R.options('e-maritalStatus',C.maritalStatuses);R.options('e-district',C.districts);R.options('e-reviewStatus',C.reviewStatuses);
  function activeBatch(){return state.batches.find(b=>b.id===state.selectedBatchId)||null;}
@@ -1608,12 +1623,21 @@ window.RMMJ_QR = {make:function(value){var q=new QRCode(0,QRErrorCorrectLevel.M)
   $('tableInfo').textContent=matches.length?`Memaparkan ${start+1}-${Math.min(start+state.pageSize,matches.length)} daripada ${matches.length} rekod batch ini`:'Tiada rekod dalam paparan';
   $('pagination').innerHTML=totalPages>1?Array.from({length:totalPages},(_,i)=>`<button type="button" data-page="${i+1}" class="${i+1===state.page?'selected':''}" aria-label="Halaman ${i+1}">${i+1}</button>`).join(''):'';
  }
+ function renderBatchCards(){
+   const host=$('batchCardList');if(!host)return;
+   host.innerHTML=state.batches.map(b=>{
+     const opened=state.openBatchId===b.id;
+     const note=opened?`${state.records.length} rekod · ${b.status}`:`${b.organization} · ${b.status}`;
+     return `<button type="button" class="batch-open-card ${opened?'is-open':''}" data-open-batch="${escape(b.id)}" aria-expanded="${opened?'true':'false'}" aria-controls="recordsPanel"><span class="batch-card-icon" aria-hidden="true">▤</span><span class="batch-card-text"><strong>${escape(b.name)}</strong><small>${escape(note)}</small></span><span class="batch-chevron" aria-hidden="true">${opened?'⌃':'⌄'}</span></button>`;
+   }).join('');
+   R.toggle('recordsPanel',!!state.openBatchId);
+ }
  function updateBatchUI(){
    $('batchPicker').replaceChildren();
    state.batches.forEach(b=>$('batchPicker').add(new Option(`${b.name} · ${b.id}`,b.id)));
    if(state.selectedBatchId)$('batchPicker').value=state.selectedBatchId;
    $('batchTableBody').innerHTML=state.batches.map(b=>`<tr><td class="strong-cell">${escape(b.id)}</td><td>${escape(b.name)}<span class="secondary-cell">${escape(b.organization)}</span></td><td>${escape(b.startDate||'Terbuka')} - ${escape(b.endDate||'Tiada tamat')}</td><td><span class="pill ${b.status==='Dibuka'?'done':'fix'}">${escape(b.status)}</span></td><td><div class="batch-row-actions"><button type="button" class="btn btn-outline btn-small" data-batch-select="${escape(b.id)}">Pilih</button><button type="button" class="btn btn-outline btn-small" data-batch-edit="${escape(b.id)}">Edit</button><button type="button" class="btn btn-outline btn-small" data-batch-toggle="${escape(b.id)}">${b.status==='Dibuka'?'Tutup':'Buka'}</button></div></td></tr>`).join('');
-   render();
+   renderBatchCards();render();
  }
  function lockState(value){document.body.classList.toggle('admin-loading',value);state.loading=value;['loginBtn','reloadBtn','saveBtn','deleteBtn','saveBatchBtn','batchPicker','clearSelectionBtn','selectPage'].forEach(id=>$(id).disabled=value);updateSelectionBar();}
 async function adminRpc(op,data={}){
@@ -1653,7 +1677,7 @@ async function loadBatchData(){
    $('tableInfo').textContent='Mengambil rekod batch '+b.id+'…';
    const response=await adminRpc('listRecords',{batchId:b.id});
    state.records=response.records||[];
-   state.page=1;render();
+   state.page=1;render();renderBatchCards();
  }
  async function activateAdmin(batches,prefer){
    state.batches=Array.isArray(batches)?batches:[];
@@ -1661,10 +1685,10 @@ async function loadBatchData(){
    state.selectedBatchId=state.batches.some(b=>b.id===(prefer||state.selectedBatchId))?(prefer||state.selectedBatchId):state.batches[0].id;
    R.toggle('adminDashboard',true);R.toggle('adminHeaderTools',true);
    R.toggle('authPanel',false);state.records=[];state.page=1;
+   // Jangan muatkan semua rekod ketika login: kotak batch dibuka atas pilihan pengguna.
+   if(!state.batches.some(b=>b.id===state.openBatchId))state.openBatchId='';
    updateBatchUI();
-   $('tableInfo').textContent='Sedang memuatkan rekod daripada Google Sheets…';
-   // Dashboard terus muncul; hanya jadual rekod memerlukan panggilan kedua.
-   await loadBatchData();
+   if(state.openBatchId){$('tableInfo').textContent='Mengambil rekod batch…';await loadBatchData();renderBatchCards();}
  }
  async function loadReal(prefer){
    lockState(true);
@@ -1688,7 +1712,7 @@ async function loadBatchData(){
  }
   async function chooseBatch(id){
    if(!state.batches.some(b=>b.id===id))return;
-   state.selectedBatchId=id;if(!$('qrPanel').classList.contains('hidden'))drawBatchQr();$('searchInput').value='';$('districtFilter').value='';$('statusFilter').value='';R.toggle('pdfPanel',false);
+   state.selectedBatchId=id;state.openBatchId=id;renderBatchCards();if(!$('qrPanel').classList.contains('hidden'))drawBatchQr();$('searchInput').value='';$('districtFilter').value='';$('statusFilter').value='';R.toggle('pdfPanel',false);
    state.selectedIds.clear();updateSelectionBar();
    lockState(true);try{await loadBatchData();updateBatchUI();}catch(e){R.toast(e.message);}finally{lockState(false);}
  }
@@ -1783,6 +1807,13 @@ async function saveRecord(){
  $('searchInput').addEventListener('input',()=>{state.page=1;render();});
  ['districtFilter','statusFilter'].forEach(id=>$(id).addEventListener('change',()=>{state.page=1;render();}));
  $('batchPicker').addEventListener('change',e=>chooseBatch(e.target.value));
+ $('batchCardList').addEventListener('click',async e=>{
+   const button=e.target.closest('[data-open-batch]');if(!button)return;
+   const id=button.dataset.openBatch;
+   if(state.loading)return;
+   if(state.openBatchId===id){state.openBatchId='';state.selectedIds.clear();renderBatchCards();return;}
+   await chooseBatch(id);
+ });
  $('copyBatchLinkBtn').addEventListener('click',copyLink);
  $('manageBatchBtn').addEventListener('click',()=>R.toggle('batchManager',$('batchManager').classList.contains('hidden')));
  $('closeBatchManager').addEventListener('click',()=>R.toggle('batchManager',false));
@@ -1810,7 +1841,7 @@ async function saveRecord(){
  $('adminPassword').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();passwordLogin();}});
  function closeTools(){R.toggle('qrPanel',false);R.toggle('adminSettingsPanel',false);}
  function resetSession(){
-   state.token='';state.adminEmail='';state.selectedIds.clear();state.records=[];state.batches=[];
+   state.token='';state.adminEmail='';state.selectedIds.clear();state.records=[];state.batches=[];state.openBatchId='';
    R.toggle('adminDashboard',false);R.toggle('adminHeaderTools',false);
    R.toggle('authPanel',true);$('authPanel').classList.remove('is-verified');
    $('adminPassword').value='';closeTools();R.toggle('batchSection',false);R.toggle('batchManager',false);
@@ -1896,3 +1927,4 @@ async function saveRecord(){
 
 </script>
 </body></html>
+
