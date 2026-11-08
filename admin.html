@@ -22,6 +22,7 @@
 
 .logo img{display:block;width:100%;height:100%;object-fit:contain;object-position:center} .logo{padding:3px;background:#fff}
 .bulkbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:0 16px 14px;font-size:12px;color:#3a5b73}.bulkbar small{color:#8293a1}.select-record,#selectPage{width:17px;height:17px;accent-color:#184568;cursor:pointer}.datatable{min-width:880px}
+.admin-auth .auth-buttons{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.admin-login-label{font-size:12px;font-weight:700;color:#244662}.admin-password-input{padding:12px 14px;border:1px solid #c8d8e6;border-radius:10px;min-width:220px;flex:1;max-width:300px;background:#fff}.admin-password-hint{font-size:11px;color:#687e92;flex-basis:100%;order:3}.admin-auth #loginBtn{order:2}.admin-auth #logoutBtn{order:4}@media(max-width:650px){.admin-auth .auth-buttons{align-items:stretch;flex-direction:column}.admin-password-input{width:100%;max-width:none}.admin-password-hint{order:initial}.admin-auth #loginBtn{order:initial}}
 </style></head>
 <body>
 <header class="topbar"><div class="navwrap">
@@ -31,7 +32,10 @@
 <main class="page">
  <div class="headband"><div class="hero-content"><div class="eyebrow">Dashboard Pengurusan</div><h1>Pengumpulan Maklumat<br>Berkaitan Permohonan RMMJ</h1><p>Portal pentadbir untuk menyemak maklumat pemohon, mengurus status rekod dan menjana laporan mengikut keperluan.</p></div><div class="hero-art" aria-hidden="true"><div class="hero-icon"><svg viewBox="0 0 64 64"><rect x="12" y="10" width="40" height="45" rx="5"/><path d="M22 22h20M22 32h20M22 42h13M35 8v8"/></svg></div></div></div>
  <div class="kicker"><b>Portal Admin</b><span class="dot"></span> Dashboard Pengurusan</div>
- <div class="admin-auth card"><div class="authtext"><div class="auth-icon">▣</div><div><strong id="authTitle">Akses Pentadbir</strong><p id="authSub">Log masuk melalui akaun Google yang mempunyai akses kepada Google Sheets organisasi.</p></div></div><div class="auth-buttons"><button id="loginBtn" type="button" class="btn btn-primary">Masuk dengan Google</button><button id="logoutBtn" type="button" class="btn btn-outline btn-small hidden">Log Keluar</button></div></div>
+ <div class="admin-auth card"><div class="authtext"><div class="auth-icon">▣</div><div><strong id="authTitle">Akses Pentadbir</strong><p id="authSub">Masukkan kata laluan pentadbir PKPJ untuk akses dashboard.</p></div></div><div class="auth-buttons"><label for="adminPassword" class="admin-login-label">Kata Laluan Admin</label>
+<input type="password" id="adminPassword" class="admin-password-input" placeholder="Masukkan kata laluan" autocomplete="current-password" aria-describedby="adminPasswordHint">
+<span class="admin-password-hint" id="adminPasswordHint">Hint: password Wifi IT.pkpj</span>
+<button id="loginBtn" type="button" class="btn btn-primary">Log Masuk Admin</button><button id="logoutBtn" type="button" class="btn btn-outline btn-small hidden">Log Keluar</button></div></div>
  <div id="adminConfigStatus" class="notice hidden" role="alert" style="margin:14px 0 18px; padding:16px 18px; border:1px solid #e6d6b2; border-radius:12px; background:#fff8e9; color:#654b20"><strong>Tetapan Portal Admin belum lengkap.</strong><div id="adminConfigDetail" style="margin-top:5px"></div></div>
   <div id="adminDashboard" class="hidden">
   <section class="batch-strip card" aria-label="Pengurusan batch pemohon">
@@ -51,7 +55,7 @@
    <div class="tablebox"><table class="datatable"><thead><tr><th><input id="selectPage" type="checkbox" aria-label="Pilih semua rekod pada halaman ini"></th><th>No.</th><th>Nama Pemohon</th><th>Jabatan / Jawatan</th><th>Daerah Minat</th><th>Pendapatan Isi Rumah</th><th>Status</th><th>Tindakan</th></tr></thead><tbody id="dataBody"><tr><td colspan="8" class="empty">Sila log masuk untuk melihat data.</td></tr></tbody></table></div>
    <div class="tablefoot"><span id="tableInfo">Tiada rekod</span><div id="pagination" class="pagination"></div></div>
   </div>
-  <div class="notice" style="margin-top:18px"><strong>Perhatian:</strong> Status “Lengkap” bermaksud rekod telah disemak oleh pentadbir sahaja; ia bukan pengesahan kelayakan atau kelulusan RMMJ. Akses, penyuntingan dan eksport data sebenar memerlukan kebenaran Google Sheets.</div>
+  <div class="notice" style="margin-top:18px"><strong>Perhatian:</strong> Status “Lengkap” bermaksud rekod telah disemak oleh pentadbir sahaja; ia bukan pengesahan kelayakan atau kelulusan RMMJ. Akses, penyuntingan dan eksport rekod hanya dibenarkan selepas log masuk admin melalui Apps Script.</div>
  </div>
 </main>
 <footer class="footer">© 2026 Pengumpulan Maklumat Berkaitan Permohonan RMMJ <div><strong>Membangun, Melindungi, Menyejahtera</strong></div></footer>
@@ -68,24 +72,20 @@
  </div><div class="modalfooter"><button class="btn btn-red btn-small" type="button" id="deleteBtn">Padam Rekod</button><button class="btn btn-outline btn-small" type="button" id="cancelBtn">Batal</button><button class="btn btn-primary btn-small" type="submit" id="saveBtn">Simpan Perubahan</button></div></form>
 </div></div>
 <div class="toast" id="toast" role="status"></div>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+
 <script>
 /* ==== KONFIGURASI ==== */
 /* ============================================================
    TETAPAN SISTEM - URL APPS SCRIPT & ID SHEET TELAH DIISI
    1) publicEndpoint  = URL Apps Script /exec (SUDAH DIISI)
    2) spreadsheetId   = ID Google Sheet sedia ada (SUDAH DIISI)
-   3) googleClientId = MASIH PERLU diisi: OAuth Client ID
-   Nilai ini ialah pengecam awam, BUKAN rahsia. Jangan isi
-   Client Secret, token atau kata laluan dalam fail HTML.
+   3) Admin menggunakan kata laluan di pelayan Apps Script sahaja.
+   Password sebenar TIDAK disimpan dalam fail GitHub.
    ============================================================ */
 window.RMMJ_CONFIG = Object.freeze({
   title: 'Pengumpulan Maklumat Berkaitan Permohonan RMMJ',
   publicEndpoint: 'https://script.google.com/macros/s/AKfycbw2vORbQj0qE_34ogLx3rNnwSBLCcrAggUGnZbEDdYrgVa8G0Kaj2KeND7B5xD5Fs9E/exec',
   spreadsheetId: '11HNBYnaxlEeiY5ovaC6yHcEuEMUyhTQL_oE14lmAz3Q',
-  googleClientId: 'TAMPAL_CLIENT_ID_GOOGLE',
-  // WAJIB: masukkan e-mel Google pegawai PKPJ yang DIBENARKAN.
-  adminAllowedEmails: ['TAMPAL_EMEL_ADMIN_PK_PJ'],
   batchSheet: 'BATCHES',
   districts: ['Johor Bahru','Batu Pahat','Kluang','Kulai','Kota Tinggi','Mersing','Muar','Pontian','Segamat','Tangkak'],
   maritalStatuses: ['Bujang','Berkahwin','Duda','Janda','Balu'],
@@ -222,7 +222,7 @@ window.RMMJ_CONFIG = Object.freeze({
  const HEADERS=['ID Rekod','Tarikh Hantar','ID Batch','Nama','No. Kad Pengenalan','No. Telefon','Jabatan Semasa','Jawatan','Status Perkahwinan','Nama Pasangan','No. KP Pasangan','No. Telefon Pasangan','Pendapatan Isi Rumah (RM)','Mempunyai Akaun e-Rumah?','Pernah Memiliki Harta/Rumah?','Daerah Minat RMMJ','Status Semakan','Catatan Pentadbir','Tarikh Kemas Kini'];
  const BATCH_FIELDS=['id','name','organization','startDate','endDate','status','sheetName','createdAt','updatedAt','notes'];
  const INPUTS=['name','ic','phone','department','position','maritalStatus','spouseName','spouseIc','spousePhone','householdIncome','hasERumah','hasOwnedProperty','district','reviewStatus','adminNotes'];
- const configured=R.isConfigured(C.spreadsheetId)&&R.isConfigured(C.googleClientId);
+ const configured=R.isConfigured(C.publicEndpoint);
  const state={token:'',adminEmail:'',batches:[],selectedBatchId:'',records:[],sheetGid:null,page:1,pageSize:7,editIndex:null,editingBatchId:null,loading:false,selectedIds:new Set()};
  R.options('districtFilter',C.districts,'Semua Daerah');R.options('statusFilter',C.reviewStatuses,'Semua Status');
  R.options('e-maritalStatus',C.maritalStatuses);R.options('e-district',C.districts);R.options('e-reviewStatus',C.reviewStatuses);
@@ -261,68 +261,73 @@ window.RMMJ_CONFIG = Object.freeze({
    render();
  }
  function lockState(value){state.loading=value;['loginBtn','reloadBtn','saveBtn','deleteBtn','saveBatchBtn','batchPicker','clearSelectionBtn','selectPage'].forEach(id=>$(id).disabled=value);updateSelectionBar();}
- async function sheets(path,opts={}){
-   if(!state.token)throw new Error('Sesi Google telah tamat. Sila log masuk semula.');
-   const res=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(C.spreadsheetId)+path,{...opts,headers:{Authorization:'Bearer '+state.token,'Content-Type':'application/json',...(opts.headers||{})}});
-   let body={};try{body=await res.json();}catch(_){}
-   if(!res.ok){if(res.status===401)state.token='';let msg=body.error?.message||'Sambungan Google Sheets gagal.';
-     if(res.status===403)msg='Akses ditolak. Akaun ini memerlukan kebenaran Editor pada Google Sheets serta Google Sheets API yang aktif.';
-     throw new Error(msg);
-   }
-   return body;
+async function adminRpc(op,data={}){
+   if(!configured)throw new Error('URL Apps Script /exec belum ditetapkan.');
+   const origin=location.origin;
+   if(!/^https:\/\/[a-z0-9-]+\.github\.io$/i.test(origin) &&
+      !/^http:\/\/(?:localhost|127\.0\.0\.1)(?::\d{1,5})?$/.test(origin))
+     throw new Error('Buka Portal Admin melalui GitHub Pages (https), bukan fail HTML setempat.');
+   const id=(crypto.randomUUID?.()||String(Date.now())+String(Math.random()).slice(2)).replace(/[^a-z0-9_-]/ig,'');
+   return new Promise((resolve,reject)=>{
+     const frame=document.createElement('iframe');frame.name='rmmj_iframe_'+id;frame.setAttribute('aria-hidden','true');
+     frame.style.cssText='position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;border:0';
+     const form=document.createElement('form');form.method='POST';form.target=frame.name;form.action=C.publicEndpoint;form.style.display='none';
+     const fields={portalRpc:'RMMJ_ADMIN_V1',requestId:id,origin,op,token:state.token||'',password:op==='login'?String(data.password||''):'',data:JSON.stringify(op==='login'?{}:data)};
+     for(const [name,value] of Object.entries(fields)){
+       const input=document.createElement('input');input.type='hidden';input.name=name;input.value=value;form.append(input);
+     }
+     let done=false;
+     const clean=()=>{window.removeEventListener('message',handle);clearTimeout(timer);form.remove();frame.remove();};
+     const fail=err=>{if(done)return;done=true;clean();reject(err);};
+     const handle=ev=>{
+       const allowedGoogle=/^https:\/\/(?:[a-z0-9-]+\.)*googleusercontent\.com$/i.test(ev.origin)||ev.origin==='https://script.google.com';
+       if(!allowedGoogle||ev.data?.tag!=='RMMJ_ADMIN_RSP_V1'||ev.data?.id!==id)return;
+       if(done)return;done=true;clean();
+       if(!ev.data.result?.ok)reject(new Error(ev.data.result?.error||'Operasi gagal.'));
+       else resolve(ev.data.result.result);
+     };
+     const timer=setTimeout(()=>fail(new Error('Pelayan Apps Script tidak memberi respons. Semak deployment /exec (New version) dan sambungan Internet.')),50000);
+     window.addEventListener('message',handle);
+     document.body.append(frame,form);
+     try{form.submit();}catch(e){fail(e);}
+   });
  }
- function range(sheet,cell){return encodeURIComponent("'"+sheet.replace(/'/g,"''")+"'!"+cell);}
- async function loadBatchData(){
+  function range(sheet,cell){return encodeURIComponent("'"+sheet.replace(/'/g,"''")+"'!"+cell);}
+async function loadBatchData(){
    const b=activeBatch();if(!b){state.records=[];render();return;}
-   const response=await sheets('/values/'+range(b.sheetName,'A2:S')+'?valueRenderOption=UNFORMATTED_VALUE');
-   state.records=(response.values||[]).map((row,i)=>{const r={};FIELDS.forEach((f,k)=>r[f]=row[k]??'');r.rowNum=i+2;return r;}).filter(r=>r.id&&r.batchId===b.id);
-   const meta=await sheets('?fields=sheets(properties(sheetId,title))');
-   state.sheetGid=meta.sheets?.find(x=>x.properties?.title===b.sheetName)?.properties?.sheetId;
-   if(typeof state.sheetGid!=='number')throw new Error('Helaian batch tidak dapat ditemukan.');
+   const response=await adminRpc('listRecords',{batchId:b.id});
+   state.records=response.records||[];
    state.page=1;render();
  }
  async function loadReal(prefer){
    lockState(true);$('authSub').textContent='Sedang memuatkan senarai batch...';
    try{
-     const data=await sheets('/values/'+range(C.batchSheet,'A2:J')+'?valueRenderOption=FORMATTED_VALUE');
-     state.batches=(data.values||[]).map((row,i)=>{const obj={};BATCH_FIELDS.forEach((f,k)=>obj[f]=String(row[k]??''));obj.rowNum=i+2;return obj;}).filter(b=>b.id&&b.sheetName);
-     if(!state.batches.length)throw new Error('Tiada batch. Jalankan setupDatabase() di Apps Script.');
+     const response=await adminRpc('listBatches');
+     state.batches=response.batches||[];
+     if(!state.batches.length)throw new Error('Tiada batch. Jalankan setup() di Apps Script.');
      state.selectedBatchId=state.batches.some(b=>b.id===(prefer||state.selectedBatchId))?(prefer||state.selectedBatchId):state.batches[0].id;
      R.toggle('adminDashboard',true);R.toggle('logoutBtn',true);$('loginBtn').classList.add('hidden');
-     $('authTitle').textContent='Akses Admin Disahkan';$('authSub').textContent='Setiap batch dibaca daripada helaian Google Sheets tersendiri.';
+     $('adminPassword').classList.add('hidden');$('adminPasswordHint').classList.add('hidden');
+     document.querySelector('.admin-login-label')?.classList.add('hidden');
+     $('authTitle').textContent='Akses Admin Disahkan';$('authSub').textContent='Rekod diakses melalui Apps Script bagi batch yang dipilih.';
      updateBatchUI();await loadBatchData();
-   }catch(e){R.toast(e.message);$('authSub').textContent='Gagal memuatkan data. Semak konfigurasi dan kebenaran.';}
+   }catch(e){R.toast(e.message);$('authSub').textContent='Gagal memuatkan data. Sila semak Apps Script dan cuba lagi.';}
    finally{lockState(false);}
  }
- async function googleLogin(){
-   if(!configured){R.toast('Tetapkan Google OAuth Client ID dalam admin.html dahulu.');return;}
-   const allowed=(C.adminAllowedEmails||[]).map(x=>String(x).trim().toLowerCase()).filter(x=>x.includes('@')&&!x.startsWith('tampal_'));
-   if(!allowed.length){R.toast('Masukkan e-mel admin PKPJ yang dibenarkan dalam adminAllowedEmails dahulu.');return;}
-   if(!window.google?.accounts?.oauth2){R.toast('Perkhidmatan Google Login belum tersedia.');return;}
-   const client=google.accounts.oauth2.initTokenClient({
-     client_id:C.googleClientId,
-     scope:'openid email https://www.googleapis.com/auth/spreadsheets',
-     callback:async o=>{
-       if(o.error||!o.access_token){R.toast('Log masuk Google gagal.');return;}
-       state.token=o.access_token;
-       try {
-         const res=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+state.token}});
-         if(!res.ok)throw new Error('Tidak dapat mengesahkan identiti Google.');
-         const profile=await res.json();
-         const email=String(profile.email||'').trim().toLowerCase();
-         if(!profile.email_verified||!allowed.includes(email))throw new Error('Akses ditolak. Akaun ini bukan dalam senarai admin PKPJ yang dibenarkan.');
-         state.adminEmail=email;
-         await loadReal(); // API Google Sheets juga menguatkuasakan kebenaran fail.
-       } catch(err){
-         if(state.token&&window.google?.accounts?.oauth2)google.accounts.oauth2.revoke(state.token,()=>{});
-         state.token='';state.adminEmail='';R.toast(err.message||'Akses admin tidak dibenarkan.');
-       }
-     },
-     error_callback:()=>R.toast('Tetingkap log masuk Google tidak dapat dibuka.')
-   });
-   client.requestAccessToken({prompt:'select_account'});
+ async function passwordLogin(){
+   const password=$('adminPassword').value;
+   if(!password)return R.toast('Sila masukkan kata laluan admin.');
+   $('loginBtn').disabled=true;
+   try{
+     const response=await adminRpc('login',{password});
+     state.token=response.token;
+     state.adminEmail='Admin PKPJ';
+     $('adminPassword').value='';
+     await loadReal();
+   }catch(e){R.toast(e.message||'Log masuk gagal.');}
+   finally{$('loginBtn').disabled=false;}
  }
- async function chooseBatch(id){
+  async function chooseBatch(id){
    if(!state.batches.some(b=>b.id===id))return;
    state.selectedBatchId=id;$('searchInput').value='';$('districtFilter').value='';$('statusFilter').value='';R.toggle('pdfPanel',false);
    state.selectedIds.clear();updateSelectionBar();
@@ -350,38 +355,18 @@ window.RMMJ_CONFIG = Object.freeze({
  }
  function genId(){const t=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kuala_Lumpur'}).replace(/-/g,'').slice(0,6);const bytes=new Uint8Array(4);crypto.getRandomValues(bytes);return 'B'+t+'-'+[...bytes].map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase();}
  function batchRow(b){return BATCH_FIELDS.map(f=>String(b[f]??''));}
- async function saveBatch(){
+async function saveBatch(){
    const values=batchPayload();const old=state.batches.find(b=>b.id===state.editingBatchId);
-   const b=old?{...old,...values,updatedAt:now()}:{id:genId(),...values,sheetName:'',createdAt:now(),updatedAt:now(),rowNum:state.batches.length+2};
-   if(!old)b.sheetName='DATA_'+b.id.replace(/-/g,'_');
+   const b=old?{...old,...values}:{id:genId(),...values};
    lockState(true);
    try{
-     if(old){
-       await sheets('/values/'+range(C.batchSheet,`A${b.rowNum}:J${b.rowNum}`)+'?valueInputOption=RAW',{method:'PUT',body:JSON.stringify({values:[batchRow(b)]})});
-     }else{
-       const created=await sheets(':batchUpdate',{method:'POST',body:JSON.stringify({requests:[{addSheet:{properties:{title:b.sheetName,gridProperties:{frozenRowCount:1}}}}]})});
-       const newSheetId=created.replies?.[0]?.addSheet?.properties?.sheetId;
-       // Pastikan No. KP dan No. Telefon disimpan sebagai TEKS (kekalkan sifar awalan).
-       // Format pendapatan sahaja sebagai nombor. Set filter tajuk dan warna korporat.
-       if(typeof newSheetId==='number'){
-         const sheetRange={sheetId:newSheetId};
-         await sheets(':batchUpdate',{method:'POST',body:JSON.stringify({requests:[
-           {repeatCell:{range:{...sheetRange,startColumnIndex:0,endColumnIndex:19},cell:{userEnteredFormat:{numberFormat:{type:'TEXT'}}},fields:'userEnteredFormat.numberFormat'}},
-           {repeatCell:{range:{...sheetRange,startColumnIndex:12,endColumnIndex:13},cell:{userEnteredFormat:{numberFormat:{type:'NUMBER',pattern:'#,##0.00'}}},fields:'userEnteredFormat.numberFormat'}},
-           {repeatCell:{range:{...sheetRange,startRowIndex:0,endRowIndex:1},cell:{userEnteredFormat:{backgroundColor:{red:0.09,green:0.24,blue:0.36},textFormat:{bold:true,foregroundColor:{red:1,green:1,blue:1}}}},fields:'userEnteredFormat.backgroundColor,userEnteredFormat.textFormat'}},
-           {setBasicFilter:{filter:{range:{...sheetRange,startRowIndex:0}}}},
-           {updateDimensionProperties:{range:{...sheetRange,dimension:'COLUMNS',startIndex:3,endIndex:4},properties:{pixelSize:235},fields:'pixelSize'}},
-           {updateDimensionProperties:{range:{...sheetRange,dimension:'COLUMNS',startIndex:6,endIndex:7},properties:{pixelSize:210},fields:'pixelSize'}}
-         ]})});
-       }
-       await sheets('/values/'+range(b.sheetName,'A1:S1')+'?valueInputOption=RAW',{method:'PUT',body:JSON.stringify({values:[HEADERS]})});
-       await sheets('/values/'+range(C.batchSheet,'A1:J')+':append?valueInputOption=RAW&insertDataOption=INSERT_ROWS',{method:'POST',body:JSON.stringify({values:[batchRow(b)]})});
-     }
-     resetBatchForm();await loadReal(b.id);R.toast(old?'Tetapan batch disimpan.':'Batch baharu disediakan dengan tab data sendiri.');
-   }catch(e){R.toast('Batch tidak berjaya disimpan sepenuhnya: '+e.message+'; semak Google Sheets sebelum cuba lagi.');}
+     await adminRpc('saveBatch',b);
+     resetBatchForm();await loadReal(b.id);
+     R.toast(old?'Tetapan batch disimpan.':'Batch baharu disediakan dengan tab data sendiri.');
+   }catch(e){R.toast('Batch tidak berjaya disimpan: '+e.message);}
    finally{lockState(false);}
  }
- function showModal(index){const x=state.records[index];if(!x)return;state.editIndex=index;$('editRef').textContent=`${x.id} · Batch ${x.batchId} · ${x.createdAt}`;INPUTS.forEach(f=>{$('e-'+f).value=x[f]??''});toggleSpouse();R.toggle('editOverlay',true);document.body.style.overflow='hidden';}
+  function showModal(index){const x=state.records[index];if(!x)return;state.editIndex=index;$('editRef').textContent=`${x.id} · Batch ${x.batchId} · ${x.createdAt}`;INPUTS.forEach(f=>{$('e-'+f).value=x[f]??''});toggleSpouse();R.toggle('editOverlay',true);document.body.style.overflow='hidden';}
  function hideModal(){R.toggle('editOverlay',false);document.body.style.overflow='';state.editIndex=null;}
  function validateEdit(p){
    if(!/^\d{12}$/.test(p.ic))throw new Error('No. KP mesti mengandungi 12 digit.');
@@ -392,40 +377,24 @@ window.RMMJ_CONFIG = Object.freeze({
  }
  function collectEdit(){const obj={};INPUTS.forEach(f=>obj[f]=$('e-'+f).value.trim());if(obj.maritalStatus!=='Berkahwin'){obj.spouseName='';obj.spouseIc='';obj.spousePhone='';}obj.householdIncome=Number(obj.householdIncome);obj.ic=obj.ic.replace(/\D/g,'');obj.spouseIc=obj.spouseIc.replace(/\D/g,'');return obj;}
  function toSheetRow(r){return FIELDS.map(f=>f==='householdIncome'?Number(r[f]||0):String(r[f]??''));}
- async function saveRecord(){
-   const old=state.records[state.editIndex];if(!old)return;const input=collectEdit();validateEdit(input);const next={...old,...input,updatedAt:now()};
-   lockState(true);try{
-     const b=activeBatch();const before=await sheets('/values/'+range(b.sheetName,`A${old.rowNum}:C${old.rowNum}`)+'?valueRenderOption=FORMATTED_VALUE');
-     if(before.values?.[0]?.[0]!==old.id||before.values?.[0]?.[2]!==b.id)throw new Error('Kedudukan rekod telah berubah. Muat semula dahulu.');
-     await sheets('/values/'+range(b.sheetName,`A${old.rowNum}:S${old.rowNum}`)+'?valueInputOption=RAW',{method:'PUT',body:JSON.stringify({values:[toSheetRow(next)]})});
-     hideModal();await loadBatchData();R.toast('Rekod dalam batch terpilih berjaya dikemas kini.');
-   }catch(e){R.toast('Kemas kini gagal: '+e.message);}finally{lockState(false);}
+async function saveRecord(){
+   const old=state.records[state.editIndex];if(!old)return;
+   const input=collectEdit();validateEdit(input);
+   lockState(true);
+   try{
+     await adminRpc('saveRecord',{...old,...input});
+     hideModal();await loadBatchData();R.toast('Rekod berjaya dikemas kini.');
+   }catch(e){R.toast('Kemas kini gagal: '+e.message);}
+   finally{lockState(false);}
  }
  async function archiveAndDelete(records){
-   const b=activeBatch();
-   if(!b||typeof state.sheetGid!=='number')throw new Error('Pilih batch yang sah dahulu.');
-   if(!records.length)throw new Error('Tiada rekod dipilih.');
-   if(records.length>50)throw new Error('Sila padam maksimum 50 rekod dalam satu tindakan.');
-   // Semak rekod semasa sebelum memadam untuk kurangkan risiko kerana kedudukan baris berubah.
-   const query=records.map(r=>'ranges='+encodeURIComponent("'"+b.sheetName.replace(/'/g,"''")+"'!A"+r.rowNum+':S'+r.rowNum)).join('&');
-   const latest=await sheets('/values:batchGet?valueRenderOption=UNFORMATTED_VALUE&'+query);
-   const arrays=(latest.valueRanges||[]).map(x=>x.values?.[0]||[]);
-   if(arrays.length!==records.length)throw new Error('Gagal menyemak semula rekod. Muat semula dahulu.');
-   records.forEach((r,i)=>{if(String(arrays[i][0])!==r.id||String(arrays[i][2])!==b.id)throw new Error('Kedudukan rekod berubah. Muat semula sebelum padam.');});
-   const timestamp=now();
-   const trash=records.map((r,i)=>[timestamp,state.adminEmail,b.id,r.id,JSON.stringify(arrays[i])]);
-   // Arkibkan salinan KESELURUHAN baris SEBELUM memadam.
-   await sheets('/values/'+range('REKOD_DIPADAM','A:E')+':append?valueInputOption=RAW&insertDataOption=INSERT_ROWS',
-     {method:'POST',body:JSON.stringify({values:trash})});
-   const requests=records.map(r=>r.rowNum-1).sort((a,b)=>b-a).map(startIndex=>({deleteDimension:{range:{sheetId:state.sheetGid,dimension:'ROWS',startIndex,endIndex:startIndex+1}}}));
-   await sheets(':batchUpdate',{method:'POST',body:JSON.stringify({requests})});
-   // Log ini tidak mengandungi maklumat peribadi selain ID rujukan.
-   try{await sheets('/values/'+range('LOG_AKTIVITI','A:D')+':append?valueInputOption=RAW&insertDataOption=INSERT_ROWS',
-      {method:'POST',body:JSON.stringify({values:records.map(r=>[timestamp,'ADMIN PADAM',r.id,'Batch '+b.id+' oleh '+state.adminEmail])})});}
-   catch(e){console.warn('Log gagal, arkib dan pemadaman telah selesai.',e);}
+   const b=activeBatch();if(!b)throw new Error('Pilih batch yang sah dahulu.');
+   if(!records.length||records.length>50)throw new Error('Pilih maksimum 50 rekod.');
+   // Arkib dan pemadaman dilakukan bersama-sama di Apps Script, di bawah ScriptLock.
+   await adminRpc('deleteRecords',{batchId:b.id,ids:records.map(r=>r.id)});
    state.selectedIds.clear();hideModal();await loadBatchData();
  }
- async function deleteRecord(){
+  async function deleteRecord(){
    const r=state.records[state.editIndex];if(!r)return;
    if(!confirm('Anda pasti mahu padam rekod '+r.id+' daripada '+r.batchId+'? Salinan akan disimpan dalam tab REKOD_DIPADAM.'))return;
    lockState(true);try{await archiveAndDelete([r]);R.toast('Rekod dipadam dan salinan disimpan dalam arkib.');}
@@ -478,22 +447,28 @@ window.RMMJ_CONFIG = Object.freeze({
  $('deleteBtn').addEventListener('click',deleteRecord);$('closeModal').addEventListener('click',hideModal);$('cancelBtn').addEventListener('click',hideModal);
  $('editOverlay').addEventListener('mousedown',ev=>{if(ev.target===$('editOverlay'))hideModal();});
  document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!$('editOverlay').classList.contains('hidden'))hideModal();});
- $('loginBtn').addEventListener('click',googleLogin);
- $('logoutBtn').addEventListener('click',()=>{if(state.token&&window.google?.accounts?.oauth2)google.accounts.oauth2.revoke(state.token,()=>{});state.token='';state.adminEmail='';state.selectedIds.clear();state.records=[];state.batches=[];R.toggle('adminDashboard',false);R.toggle('logoutBtn',false);$('loginBtn').classList.remove('hidden');$('authTitle').textContent='Akses Pentadbir';$('authSub').textContent='Anda telah log keluar.';R.toast('Sesi ditutup.');});
- $('reloadBtn').addEventListener('click',()=>{state.selectedIds.clear();updateSelectionBar();loadReal(state.selectedBatchId);});
+ $('loginBtn').addEventListener('click',passwordLogin);
+ $('adminPassword').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();passwordLogin();}});
+ $('logoutBtn').addEventListener('click',async()=>{
+   try{if(state.token)await adminRpc('logout');}catch(_){}
+   state.token='';state.adminEmail='';state.selectedIds.clear();state.records=[];state.batches=[];
+   R.toggle('adminDashboard',false);R.toggle('logoutBtn',false);
+   $('adminPassword').classList.remove('hidden');$('adminPasswordHint').classList.remove('hidden');
+   document.querySelector('.admin-login-label')?.classList.remove('hidden');
+   $('loginBtn').classList.remove('hidden');$('authTitle').textContent='Akses Pentadbir PKPJ';
+   $('authSub').textContent='Sila masukkan kata laluan pentadbir.';R.toast('Sesi telah ditutup.');
+ });
+  $('reloadBtn').addEventListener('click',()=>{state.selectedIds.clear();updateSelectionBar();loadReal(state.selectedBatchId);});
  $('exportBtn').addEventListener('click',exportCsv);
  $('pdfBtn').addEventListener('click',()=>R.toggle('pdfPanel',$('pdfPanel').classList.contains('hidden')));
  $('closePdfBtn').addEventListener('click',()=>R.toggle('pdfPanel',false));
  $('generatePdfBtn').addEventListener('click',downloadPdf);
- $('authTitle').textContent='Akses Pentadbir PKPJ';$('authSub').textContent='Hanya akaun Google pegawai yang dibenarkan dan mempunyai akses Google Sheet boleh mengurus rekod.';
- const missingConfig=[];
- if(!R.isConfigured(C.googleClientId))missingConfig.push('Google OAuth Client ID');
- if(!(C.adminAllowedEmails||[]).some(x=>String(x).includes('@')&&!String(x).startsWith('TAMPAL_')))missingConfig.push('senarai e-mel admin PKPJ');
- if(missingConfig.length){
+ $('authTitle').textContent='Akses Pentadbir PKPJ';
+ $('authSub').textContent='Masukkan kata laluan admin. Tiada Google OAuth diperlukan.';
+ if(!configured){
    $('adminConfigStatus').classList.remove('hidden');
-   $('adminConfigDetail').textContent='Sila lengkapkan '+missingConfig.join(' dan ')+' dalam admin.html. Halaman boleh dibuka, tetapi log masuk belum boleh digunakan.';
+   $('adminConfigDetail').textContent='URL Apps Script /exec belum ditetapkan dalam admin.html.';
    $('loginBtn').disabled=true;
-   $('authSub').textContent='Pautan Google Sheet dan Apps Script telah diisi. Konfigurasi pengesahan admin masih belum lengkap.';
  }
 
 })();
