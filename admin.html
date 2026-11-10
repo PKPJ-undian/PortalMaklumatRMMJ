@@ -228,6 +228,15 @@ body{background:#f6f8fb;color:#17314d} .topbar{height:61px;position:sticky;backg
 .review-choice-hint{font-size:10px;color:#7b91a4}
 .datatable .pill{white-space:normal;line-height:1.35;max-width:185px;border-radius:12px}
 @media(max-width:610px){.review-choice-group{grid-template-columns:1fr}}
+
+/* SORT JADUAL ADMIN: tajuk boleh klik, susunan menaik / menurun. */
+.datatable thead th[data-sort]{padding:0}
+.datatable .sort-head{display:inline-flex;align-items:center;justify-content:flex-start;gap:7px;width:100%;min-height:42px;padding:12px 13px;border:0;background:transparent;color:inherit;font:inherit;font-weight:inherit;letter-spacing:inherit;text-transform:inherit;text-align:left;cursor:pointer;white-space:normal}
+.datatable .sort-head:hover{background:#eaf2f9;color:#19496c}
+.datatable .sort-head:focus-visible{outline:2px solid #35739a;outline-offset:-3px}
+.datatable .sort-arrow{color:#879eaf;font-size:13px;font-weight:900;line-height:1}
+.datatable th[aria-sort="ascending"] .sort-arrow,.datatable th[aria-sort="descending"] .sort-arrow{color:#18557d}
+@media(max-width:700px){.datatable .sort-head{padding:10px 11px}}
 </style></head>
 <body>
 <div class="admin-progress" id="adminProgress" aria-hidden="true"><span></span></div>
@@ -280,7 +289,7 @@ body{background:#f6f8fb;color:#17314d} .topbar{height:61px;position:sticky;backg
   <div class="stats"><div class="stat"><small>Jumlah Rekod</small><strong id="totalCount">0</strong><div class="stat-icon">▤</div><div class="trend">Rekod dihantar</div></div><div class="stat"><small>Belum Disemak</small><strong id="pendingCount">0</strong><div class="stat-icon">◷</div><div class="trend">Menunggu tindakan</div></div><div class="stat"><small>Ada Akaun e-Rumah</small><strong id="eRumahCount">0</strong><div class="stat-icon">⌂</div><div class="trend">Berdasarkan pengakuan</div></div><div class="stat"><small>Telah Disemak</small><strong id="completeCount">0</strong><div class="stat-icon">✓</div><div class="trend">Semakan pentadbiran</div></div></div>
   <div class="card"><div class="toolbar"><div class="batch-quick-search" role="group" aria-label="Carian mengikut batch"><input class="control" type="search" id="batchQuickSearch" placeholder="Cari batch / ID / jabatan…" aria-label="Cari batch berdasarkan nama, ID atau jabatan" autocomplete="off"><select class="control select" id="batchQuickSelect" aria-label="Pilih batch hasil carian"><option value="">Pilih batch</option></select><small class="batch-count" id="batchQuickCount" aria-live="polite"></small></div><div class="search"><input class="control" type="search" id="searchInput" placeholder="Cari nama, No. KP, jabatan atau jawatan…" aria-label="Carian rekod"></div><select class="control select" id="districtFilter" aria-label="Tapisan daerah"></select><select class="control select" id="statusFilter" aria-label="Tapisan status"></select></div>
    <div class="bulkbar"><span id="selectedCount">0 rekod dipilih</span><button type="button" id="clearSelectionBtn" class="btn btn-outline btn-small">Kosongkan Pilihan</button><button type="button" id="deleteSelectedBtn" class="btn btn-red btn-small" disabled>Padam Dipilih</button><small>Pemadaman hanya untuk batch aktif; rekod disalin ke REKOD_DIPADAM.</small></div>
-   <div class="tablebox"><table class="datatable"><thead><tr><th><input id="selectPage" type="checkbox" aria-label="Pilih semua rekod pada halaman ini"></th><th>No.</th><th>Nama Pemohon</th><th>Tarikh &amp; Masa Hantar</th><th>Jabatan / Jawatan</th><th>Daerah Minat</th><th>Pendapatan Isi Rumah</th><th>Status</th><th>Tindakan</th></tr></thead><tbody id="dataBody"><tr><td colspan="9" class="empty">Sila log masuk untuk melihat data.</td></tr></tbody></table></div>
+   <div class="tablebox"><table class="datatable"><thead><tr><th><input id="selectPage" type="checkbox" aria-label="Pilih semua rekod pada halaman ini"></th><th data-sort="number" aria-sort="none"><button type="button" class="sort-head" data-sort="number">No. <span class="sort-arrow" aria-hidden="true">↕</span></button></th><th data-sort="name" aria-sort="none"><button type="button" class="sort-head" data-sort="name">Nama Pemohon <span class="sort-arrow" aria-hidden="true">↕</span></button></th><th data-sort="createdAt" aria-sort="none"><button type="button" class="sort-head" data-sort="createdAt">Tarikh &amp; Masa Hantar <span class="sort-arrow" aria-hidden="true">↕</span></button></th><th data-sort="department" aria-sort="none"><button type="button" class="sort-head" data-sort="department">Jabatan / Jawatan <span class="sort-arrow" aria-hidden="true">↕</span></button></th><th data-sort="district" aria-sort="none"><button type="button" class="sort-head" data-sort="district">Daerah Minat <span class="sort-arrow" aria-hidden="true">↕</span></button></th><th data-sort="householdIncome" aria-sort="none"><button type="button" class="sort-head" data-sort="householdIncome">Pendapatan Isi Rumah <span class="sort-arrow" aria-hidden="true">↕</span></button></th><th data-sort="reviewStatus" aria-sort="none"><button type="button" class="sort-head" data-sort="reviewStatus">Status <span class="sort-arrow" aria-hidden="true">↕</span></button></th><th>Tindakan</th></tr></thead><tbody id="dataBody"><tr><td colspan="9" class="empty">Sila log masuk untuk melihat data.</td></tr></tbody></table></div>
    <div class="tablefoot"><span id="tableInfo">Tiada rekod</span><div id="pagination" class="pagination"></div></div>
   </div>
   <div class="notice" style="margin-top:18px"><strong>Perhatian:</strong> Status semakan merekodkan hasil semakan pemilikan harta oleh pentadbir sahaja; ia bukan pengesahan kelayakan atau kelulusan RMMJ. Akses, penyuntingan dan eksport rekod hanya dibenarkan selepas log masuk admin melalui Apps Script.</div>
@@ -1692,7 +1701,7 @@ window.RMMJ_QR = {make:function(value){var q=new QRCode(0,QRErrorCorrectLevel.M)
  const BATCH_FIELDS=['id','name','organization','startDate','endDate','status','sheetName','createdAt','updatedAt','notes'];
  const INPUTS=['name','ic','phone','department','position','maritalStatus','spouseName','spouseIc','spousePhone','householdIncome','hasERumah','hasOwnedProperty','district','reviewStatus','adminNotes'];
  const configured=R.isConfigured(C.publicEndpoint);
- const state={token:'',adminEmail:'',batches:[],selectedBatchId:'',openBatchId:'',records:[],sheetGid:null,page:1,pageSize:7,editIndex:null,editingBatchId:null,loading:false,selectedIds:new Set(),recordCache:new Map(),loadSequence:0};
+ const state={token:'',adminEmail:'',batches:[],selectedBatchId:'',openBatchId:'',records:[],sheetGid:null,page:1,pageSize:7,editIndex:null,editingBatchId:null,loading:false,selectedIds:new Set(),recordCache:new Map(),loadSequence:0,sortKey:'number',sortDirection:'asc'};
  R.options('districtFilter',C.districts,'Semua Daerah');R.options('statusFilter',C.reviewStatuses,'Semua Status');
  R.options('e-maritalStatus',C.maritalStatuses);R.options('e-district',C.districts);
  document.querySelectorAll('input[name="reviewOwnershipChoice"]').forEach(radio=>radio.addEventListener('change',()=>{if(radio.checked)$('e-reviewStatus').value=radio.value;}));
@@ -1703,8 +1712,32 @@ window.RMMJ_QR = {make:function(value){var q=new QRCode(0,QRErrorCorrectLevel.M)
  function escape(s){return R.escape(s);}
  function now(){return new Date().toLocaleString('sv-SE',{timeZone:'Asia/Kuala_Lumpur'}).replace('T',' ');}
  function allRowsForCurrent(){return state.records;}
- function filtered(){const term=$('searchInput').value.trim().toLocaleLowerCase('ms-MY'),district=$('districtFilter').value,status=$('statusFilter').value;
-  return allRowsForCurrent().filter(x=>(!district||x.district===district)&&(!status||x.reviewStatus===status)&&(!term||[x.name,x.ic,x.department,x.position,x.id].join(' ').toLocaleLowerCase('ms-MY').includes(term)));}
+ const sortCollator=new Intl.Collator('ms',{sensitivity:'base',numeric:true});
+ function filtered(){
+  const term=$('searchInput').value.trim().toLocaleLowerCase('ms-MY'),district=$('districtFilter').value,status=$('statusFilter').value;
+  const original=allRowsForCurrent();
+  const originalOrder=new Map(original.map((r,i)=>[r.id,i]));
+  const rows=original.filter(x=>(!district||x.district===district)&&(!status||x.reviewStatus===status)&&(!term||[x.name,x.ic,x.department,x.position,x.id].join(' ').toLocaleLowerCase('ms-MY').includes(term)));
+  const key=state.sortKey,dir=state.sortDirection==='desc'?-1:1;
+  rows.sort((a,b)=>{
+    let cmp=0;
+    if(key==='number')cmp=(originalOrder.get(a.id)||0)-(originalOrder.get(b.id)||0);
+    else if(key==='householdIncome')cmp=(Number(String(a.householdIncome||0).replace(/,/g,''))||0)-(Number(String(b.householdIncome||0).replace(/,/g,''))||0);
+    else if(key==='department')cmp=sortCollator.compare([a.department,a.position].join(' '),[b.department,b.position].join(' '));
+    else cmp=sortCollator.compare(String(a[key]??''),String(b[key]??''));
+    return cmp?cmp*dir:(originalOrder.get(a.id)||0)-(originalOrder.get(b.id)||0);
+  });
+  return rows;
+ }
+ function refreshSortHeaders(){
+   document.querySelectorAll('.datatable thead th[data-sort]').forEach(th=>{
+     const active=th.dataset.sort===state.sortKey;
+     th.setAttribute('aria-sort',active?(state.sortDirection==='asc'?'ascending':'descending'):'none');
+     const arrow=th.querySelector('.sort-arrow');if(arrow)arrow.textContent=active?(state.sortDirection==='asc'?'↑':'↓'):'↕';
+     const button=th.querySelector('.sort-head');
+     if(button)button.title=active?(state.sortDirection==='asc'?'Klik untuk susun menurun':'Klik untuk susun menaik'):'Klik untuk susun menaik';
+   });
+ }
  function updateSelectionBar(){const n=state.selectedIds.size;$('selectedCount').textContent=n+' rekod dipilih';$('deleteSelectedBtn').disabled=!n||state.loading;}
  function setStats(){const d=allRowsForCurrent();$('totalCount').textContent=d.length.toLocaleString('ms-MY');$('pendingCount').textContent=d.filter(x=>x.reviewStatus==='Belum Disemak').length.toLocaleString('ms-MY');$('eRumahCount').textContent=d.filter(x=>x.hasERumah==='Ya').length.toLocaleString('ms-MY');$('completeCount').textContent=d.filter(x=>C.reviewChoices.includes(x.reviewStatus)).length.toLocaleString('ms-MY');}
  function render(){if($('adminDashboard').classList.contains('hidden'))return;
@@ -1714,11 +1747,11 @@ window.RMMJ_QR = {make:function(value){var q=new QRCode(0,QRErrorCorrectLevel.M)
   $('activeBatchTop').textContent=b?(b.name||b.id):'Batch';
   $('selectedBatchHint').textContent=b?`ID: ${b.id} · Organisasi: ${b.organization} · Nama helaian: ${b.sheetName} · ${b.startDate||'Tiada tarikh mula'} hingga ${b.endDate||'tiada tarikh tamat'}`:'Sila pilih batch.';
   $('activeBatchSub').textContent=b?`${b.name} · ${b.organization} · Rekod hanya untuk batch ini.`:'Sila pilih batch untuk memaparkan rekod.';
-  setStats();const matches=filtered();const totalPages=Math.max(1,Math.ceil(matches.length/state.pageSize));state.page=Math.min(state.page,totalPages);
+  setStats();refreshSortHeaders();const matches=filtered();const totalPages=Math.max(1,Math.ceil(matches.length/state.pageSize));state.page=Math.min(state.page,totalPages);
   const start=(state.page-1)*state.pageSize;const page=matches.slice(start,start+state.pageSize);
   if(!page.length)$('dataBody').innerHTML='<tr><td colspan="9" class="empty">Tiada rekod untuk batch atau tapisan ini.</td></tr>';
   else $('dataBody').innerHTML=page.map((x,i)=>{const idx=state.records.indexOf(x),masked=x.ic&&String(x.ic).length===12?String(x.ic).slice(0,6)+'-**-'+String(x.ic).slice(-4):'-';
-    return `<tr><td><input type="checkbox" class="select-record" data-row-ref="${escape(x.id)}" aria-label="Pilih ${escape(x.name)}" ${state.selectedIds.has(x.id)?'checked':''}></td><td>${start+i+1}</td><td class="strong-cell">${escape(x.name)}<span class="secondary-cell">${escape(masked)}</span></td><td class="record-time">${escape(x.createdAt||'-')}</td><td>${escape(x.department)}<span class="secondary-cell">${escape(x.position)}</span></td><td>${escape(x.district)}</td><td>RM ${R.money(x.householdIncome)}</td><td><span class="pill ${statusClass(x.reviewStatus)}">${escape(x.reviewStatus)}</span></td><td><button class="btn btn-outline btn-small" type="button" data-edit="${idx}">Lihat / Edit</button></td></tr>`;}).join('');
+    return `<tr><td><input type="checkbox" class="select-record" data-row-ref="${escape(x.id)}" aria-label="Pilih ${escape(x.name)}" ${state.selectedIds.has(x.id)?'checked':''}></td><td>${idx+1}</td><td class="strong-cell">${escape(x.name)}<span class="secondary-cell">${escape(masked)}</span></td><td class="record-time">${escape(x.createdAt||'-')}</td><td>${escape(x.department)}<span class="secondary-cell">${escape(x.position)}</span></td><td>${escape(x.district)}</td><td>RM ${R.money(x.householdIncome)}</td><td><span class="pill ${statusClass(x.reviewStatus)}">${escape(x.reviewStatus)}</span></td><td><button class="btn btn-outline btn-small" type="button" data-edit="${idx}">Lihat / Edit</button></td></tr>`;}).join('');
   const sel=$('selectPage');if(sel){const ids=page.map(x=>x.id);sel.checked=ids.length>0&&ids.every(id=>state.selectedIds.has(id));sel.indeterminate=ids.some(id=>state.selectedIds.has(id))&&!sel.checked;}
   updateSelectionBar();
   $('tableInfo').textContent=matches.length?`Memaparkan ${start+1}-${Math.min(start+state.pageSize,matches.length)} daripada ${matches.length} rekod batch ini`:'Tiada rekod dalam paparan';
@@ -1942,6 +1975,13 @@ async function saveRecord(){
      window.RMMJ_PDF.download(doc,'LAPORAN_RMMJ_'+b.id+'_'+type+'.pdf');R.toast('Laporan PDF '+b.id+' berjaya dijana.');}
    catch(e){R.toast('PDF tidak dapat dijana: '+e.message);console.error(e);}
  }
+ document.querySelector('.datatable thead').addEventListener('click',event=>{
+   const button=event.target.closest('button[data-sort]');if(!button)return;
+   const key=button.dataset.sort;
+   if(state.sortKey===key)state.sortDirection=state.sortDirection==='asc'?'desc':'asc';
+   else{state.sortKey=key;state.sortDirection='asc';}
+   state.page=1;render();
+ });
  $('searchInput').addEventListener('input',()=>{state.page=1;render();});
  ['districtFilter','statusFilter'].forEach(id=>$(id).addEventListener('change',()=>{state.page=1;render();}));
  $('batchQuickSearch').addEventListener('input',()=>refreshQuickBatchSearch());
@@ -2099,5 +2139,4 @@ async function saveRecord(){
 
 </script>
 </body></html>
-
 
