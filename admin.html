@@ -214,6 +214,20 @@ body{background:#f6f8fb;color:#17314d} .topbar{height:61px;position:sticky;backg
   .batch-quick-search{grid-template-columns:1fr;}
   .batch-quick-search .batch-count{grid-column:1;}
 }
+
+/* Pilihan status semakan: satu tanda sahaja, kekal responsif. */
+.review-status-field{gap:8px}
+.review-status-title{font-size:11px;font-weight:800;color:#284159}
+.review-choice-group{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.review-choice{position:relative;display:flex;align-items:center;gap:12px;min-height:48px;padding:12px 14px;border:1px solid #d5e3ef;border-radius:12px;background:#fff;color:#244560;font-size:12px;font-weight:800;cursor:pointer;transition:background .16s,border-color .16s,box-shadow .16s}
+.review-choice input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.review-choice-check{height:23px;width:23px;flex:none;border:2px solid #9bb1c6;border-radius:7px;display:grid;place-items:center;color:transparent;font-size:16px;line-height:1}
+.review-choice:has(input:checked){border-color:#2a6c96;background:#edf6fd;box-shadow:0 0 0 1px #aacde6 inset}
+.review-choice input:checked + .review-choice-check{background:#1b577f;border-color:#1b577f;color:#fff}
+.review-choice:has(input:focus-visible){outline:3px solid #e2b959;outline-offset:2px}
+.review-choice-hint{font-size:10px;color:#7b91a4}
+.datatable .pill{white-space:normal;line-height:1.35;max-width:185px;border-radius:12px}
+@media(max-width:610px){.review-choice-group{grid-template-columns:1fr}}
 </style></head>
 <body>
 <div class="admin-progress" id="adminProgress" aria-hidden="true"><span></span></div>
@@ -263,13 +277,13 @@ body{background:#f6f8fb;color:#17314d} .topbar{height:61px;position:sticky;backg
   <div class="admin-top"><div><h2 class="admin-title">Ringkasan Maklumat Pemohon</h2><div id="activeBatchSub" class="admin-sub">Rekod pengumpulan maklumat dan status semakan bagi batch terpilih.</div></div><div class="admin-actions"><button id="reloadBtn" type="button" class="btn btn-outline btn-small">↻ Muat Semula</button><button id="exportBtn" type="button" class="btn btn-outline btn-small">⇩ Eksport CSV</button><button id="pdfBtn" type="button" class="btn btn-gold btn-small">▤ Laporan PDF</button></div></div>
   <div id="pdfPanel" class="pdf-panel card hidden"><div><strong>Jana Laporan PDF</strong><p>Laporan KHUSUS bagi batch yang dipilih, mengikut carian dan tapisan semasa. Data sebenar adalah sulit dan khusus untuk pegawai yang diberi kuasa.</p></div><div class="pdf-settings"><label class="field"><span>Jenis laporan</span><select id="pdfType" class="control select"><option value="detail">Butiran Lengkap Pemohon (Semua 13 Maklumat)</option>
 <option value="summary">Ringkasan & Senarai Pemohon</option></select></label><button type="button" id="generatePdfBtn" class="btn btn-primary btn-small">Muat Turun PDF</button><button type="button" id="closePdfBtn" class="btn btn-outline btn-small">Tutup</button></div></div>
-  <div class="stats"><div class="stat"><small>Jumlah Rekod</small><strong id="totalCount">0</strong><div class="stat-icon">▤</div><div class="trend">Rekod dihantar</div></div><div class="stat"><small>Belum Disemak</small><strong id="pendingCount">0</strong><div class="stat-icon">◷</div><div class="trend">Menunggu tindakan</div></div><div class="stat"><small>Ada Akaun e-Rumah</small><strong id="eRumahCount">0</strong><div class="stat-icon">⌂</div><div class="trend">Berdasarkan pengakuan</div></div><div class="stat"><small>Rekod Lengkap</small><strong id="completeCount">0</strong><div class="stat-icon">✓</div><div class="trend">Semakan pentadbiran</div></div></div>
+  <div class="stats"><div class="stat"><small>Jumlah Rekod</small><strong id="totalCount">0</strong><div class="stat-icon">▤</div><div class="trend">Rekod dihantar</div></div><div class="stat"><small>Belum Disemak</small><strong id="pendingCount">0</strong><div class="stat-icon">◷</div><div class="trend">Menunggu tindakan</div></div><div class="stat"><small>Ada Akaun e-Rumah</small><strong id="eRumahCount">0</strong><div class="stat-icon">⌂</div><div class="trend">Berdasarkan pengakuan</div></div><div class="stat"><small>Telah Disemak</small><strong id="completeCount">0</strong><div class="stat-icon">✓</div><div class="trend">Semakan pentadbiran</div></div></div>
   <div class="card"><div class="toolbar"><div class="batch-quick-search" role="group" aria-label="Carian mengikut batch"><input class="control" type="search" id="batchQuickSearch" placeholder="Cari batch / ID / jabatan…" aria-label="Cari batch berdasarkan nama, ID atau jabatan" autocomplete="off"><select class="control select" id="batchQuickSelect" aria-label="Pilih batch hasil carian"><option value="">Pilih batch</option></select><small class="batch-count" id="batchQuickCount" aria-live="polite"></small></div><div class="search"><input class="control" type="search" id="searchInput" placeholder="Cari nama, No. KP, jabatan atau jawatan…" aria-label="Carian rekod"></div><select class="control select" id="districtFilter" aria-label="Tapisan daerah"></select><select class="control select" id="statusFilter" aria-label="Tapisan status"></select></div>
    <div class="bulkbar"><span id="selectedCount">0 rekod dipilih</span><button type="button" id="clearSelectionBtn" class="btn btn-outline btn-small">Kosongkan Pilihan</button><button type="button" id="deleteSelectedBtn" class="btn btn-red btn-small" disabled>Padam Dipilih</button><small>Pemadaman hanya untuk batch aktif; rekod disalin ke REKOD_DIPADAM.</small></div>
    <div class="tablebox"><table class="datatable"><thead><tr><th><input id="selectPage" type="checkbox" aria-label="Pilih semua rekod pada halaman ini"></th><th>No.</th><th>Nama Pemohon</th><th>Tarikh &amp; Masa Hantar</th><th>Jabatan / Jawatan</th><th>Daerah Minat</th><th>Pendapatan Isi Rumah</th><th>Status</th><th>Tindakan</th></tr></thead><tbody id="dataBody"><tr><td colspan="9" class="empty">Sila log masuk untuk melihat data.</td></tr></tbody></table></div>
    <div class="tablefoot"><span id="tableInfo">Tiada rekod</span><div id="pagination" class="pagination"></div></div>
   </div>
-  <div class="notice" style="margin-top:18px"><strong>Perhatian:</strong> Status “Lengkap” bermaksud rekod telah disemak oleh pentadbir sahaja; ia bukan pengesahan kelayakan atau kelulusan RMMJ. Akses, penyuntingan dan eksport rekod hanya dibenarkan selepas log masuk admin melalui Apps Script.</div>
+  <div class="notice" style="margin-top:18px"><strong>Perhatian:</strong> Status semakan merekodkan hasil semakan pemilikan harta oleh pentadbir sahaja; ia bukan pengesahan kelayakan atau kelulusan RMMJ. Akses, penyuntingan dan eksport rekod hanya dibenarkan selepas log masuk admin melalui Apps Script.</div>
   </div>
  </div>
 </main>
@@ -283,7 +297,15 @@ body{background:#f6f8fb;color:#17314d} .topbar{height:61px;position:sticky;backg
  <div class="field"><label for="e-position">Jawatan *</label><input class="control" id="e-position" maxlength="120" required></div></div>
  <div class="modalsection" style="margin-top:27px">Maklumat Keluarga</div><div class="fields"><div class="field"><label for="e-maritalStatus">Status Perkahwinan *</label><select class="control select" id="e-maritalStatus" required></select></div><div class="field"><label for="e-householdIncome">Pendapatan Isi Rumah (RM) *</label><input class="control" id="e-householdIncome" type="number" step="0.01" min="0" max="99999999" required></div></div>
  <div id="e-spousePanel" class="spouse hidden"><div class="spouse-h">Maklumat Pasangan</div><div class="fields"><div class="field full"><label for="e-spouseName">Nama Pasangan *</label><input class="control" id="e-spouseName" maxlength="120"></div><div class="field"><label for="e-spouseIc">No. KP Pasangan *</label><input class="control" id="e-spouseIc" maxlength="14"></div><div class="field"><label for="e-spousePhone">Telefon Pasangan *</label><input class="control" id="e-spousePhone" maxlength="17"></div></div></div>
- <div class="modalsection" style="margin-top:27px">Maklumat Perumahan & Semakan</div><div class="fields"><div class="field"><label for="e-hasERumah">Mempunyai Akaun e-Rumah? *</label><select class="control select" id="e-hasERumah" required><option value="">-- Sila pilih --</option><option>Ya</option><option>Tidak</option></select></div><div class="field"><label for="e-hasOwnedProperty">Pernah Memiliki Harta / Rumah? *</label><select class="control select" id="e-hasOwnedProperty" required><option value="">-- Sila pilih --</option><option>Ya</option><option>Tidak</option></select></div><div class="field"><label for="e-district">Daerah Minat RMMJ *</label><select class="control select" id="e-district" required></select></div><div class="field"><label for="e-reviewStatus">Status Semakan *</label><select class="control select" id="e-reviewStatus" required></select></div><div class="field full"><label for="e-adminNotes">Catatan Pentadbir</label><textarea class="control textarea" id="e-adminNotes" maxlength="500" placeholder="Catatan dalaman sahaja"></textarea></div></div>
+ <div class="modalsection" style="margin-top:27px">Maklumat Perumahan & Semakan</div><div class="fields"><div class="field"><label for="e-hasERumah">Mempunyai Akaun e-Rumah? *</label><select class="control select" id="e-hasERumah" required><option value="">-- Sila pilih --</option><option>Ya</option><option>Tidak</option></select></div><div class="field"><label for="e-hasOwnedProperty">Pernah Memiliki Harta / Rumah? *</label><select class="control select" id="e-hasOwnedProperty" required><option value="">-- Sila pilih --</option><option>Ya</option><option>Tidak</option></select></div><div class="field"><label for="e-district">Daerah Minat RMMJ *</label><select class="control select" id="e-district" required></select></div><div class="field full review-status-field">
+ <span class="review-status-title" id="reviewStatusLabel">Status Semakan <span class="req">*</span></span>
+ <input type="hidden" id="e-reviewStatus" value="">
+ <div class="review-choice-group" role="radiogroup" aria-labelledby="reviewStatusLabel" aria-required="true">
+  <label class="review-choice"><input type="radio" name="reviewOwnershipChoice" value="ADA PEMILIKAN HARTA"><span class="review-choice-check" aria-hidden="true">✓</span><span class="review-choice-label">ADA PEMILIKAN HARTA</span></label>
+  <label class="review-choice"><input type="radio" name="reviewOwnershipChoice" value="TIADA PEMILIKAN HARTA"><span class="review-choice-check" aria-hidden="true">✓</span><span class="review-choice-label">TIADA PEMILIKAN HARTA</span></label>
+ </div>
+ <small class="review-choice-hint">Tandakan satu pilihan berdasarkan hasil semakan pentadbir.</small>
+ </div><div class="field full"><label for="e-adminNotes">Catatan Pentadbir</label><textarea class="control textarea" id="e-adminNotes" maxlength="500" placeholder="Catatan dalaman sahaja"></textarea></div></div>
  </div><div class="modalfooter"><button class="btn btn-red btn-small" type="button" id="deleteBtn">Padam Rekod</button><button class="btn btn-outline btn-small" type="button" id="cancelBtn">Batal</button><button class="btn btn-primary btn-small" type="submit" id="saveBtn">Simpan Perubahan</button></div></form>
 </div></div>
 <div class="toast" id="toast" role="status"></div>
@@ -304,7 +326,8 @@ window.RMMJ_CONFIG = Object.freeze({
   batchSheet: 'BATCHES',
   districts: ['Johor Bahru','Batu Pahat','Kluang','Kulai','Kota Tinggi','Mersing','Muar','Pontian','Segamat','Tangkak'],
   maritalStatuses: ['Bujang','Berkahwin','Duda','Janda','Balu'],
-  reviewStatuses: ['Belum Disemak','Dalam Semakan','Lengkap','Perlu Pembetulan']
+  reviewStatuses: ['Belum Disemak','ADA PEMILIKAN HARTA','TIADA PEMILIKAN HARTA'],
+  reviewChoices: ['ADA PEMILIKAN HARTA','TIADA PEMILIKAN HARTA']
 });
 </script>
 <script>
@@ -363,7 +386,7 @@ window.RMMJ_CONFIG = Object.freeze({
  function newPage(pages,meta,compact){const pg=[];pages.push(pg);sharedHeader(pg,meta,compact);return pg;}
  function summary(pages,records,meta){
    let pg=newPage(pages,meta,false);
-   const stats=[['Jumlah Pemohon',records.length],['Belum Disemak',records.filter(r=>r.reviewStatus==='Belum Disemak').length],['Rekod Lengkap',records.filter(r=>r.reviewStatus==='Lengkap').length],['Ada Akaun e-Rumah',records.filter(r=>r.hasERumah==='Ya').length]];
+   const stats=[['Jumlah Pemohon',records.length],['Belum Disemak',records.filter(r=>r.reviewStatus==='Belum Disemak').length],['Telah Disemak',records.filter(r=>['ADA PEMILIKAN HARTA','TIADA PEMILIKAN HARTA'].includes(r.reviewStatus)).length],['Ada Akaun e-Rumah',records.filter(r=>r.hasERumah==='Ya').length]];
    const boxWidth=(W-2*M-3*12)/4;
    stats.forEach(([label,count],i)=>{const x=M+i*(boxWidth+12);rect(pg,x,132,boxWidth,61,'pale');text(pg,x+12,151,label,9,{color:'blue'});text(pg,x+12,176,String(count),20,{bold:true,color:'navy'});});
    let y=211;const widths=[33,180,182,106,159,96];
@@ -1671,18 +1694,19 @@ window.RMMJ_QR = {make:function(value){var q=new QRCode(0,QRErrorCorrectLevel.M)
  const configured=R.isConfigured(C.publicEndpoint);
  const state={token:'',adminEmail:'',batches:[],selectedBatchId:'',openBatchId:'',records:[],sheetGid:null,page:1,pageSize:7,editIndex:null,editingBatchId:null,loading:false,selectedIds:new Set(),recordCache:new Map(),loadSequence:0};
  R.options('districtFilter',C.districts,'Semua Daerah');R.options('statusFilter',C.reviewStatuses,'Semua Status');
- R.options('e-maritalStatus',C.maritalStatuses);R.options('e-district',C.districts);R.options('e-reviewStatus',C.reviewStatuses);
+ R.options('e-maritalStatus',C.maritalStatuses);R.options('e-district',C.districts);
+ document.querySelectorAll('input[name="reviewOwnershipChoice"]').forEach(radio=>radio.addEventListener('change',()=>{if(radio.checked)$('e-reviewStatus').value=radio.value;}));
  function activeBatch(){return state.batches.find(b=>b.id===state.selectedBatchId)||null;}
  function toggleSpouse(){const married=$('e-maritalStatus').value==='Berkahwin';R.toggle('e-spousePanel',married);['spouseName','spouseIc','spousePhone'].forEach(f=>{$('e-'+f).required=married;if(!married)$('e-'+f).value='';});}
  $('e-maritalStatus').addEventListener('change',toggleSpouse);
- function statusClass(s){return s==='Lengkap'?'done':s==='Dalam Semakan'?'review':s==='Perlu Pembetulan'?'fix':'pending';}
+ function statusClass(s){return s==='TIADA PEMILIKAN HARTA'||s==='Lengkap'?'done':s==='ADA PEMILIKAN HARTA'||s==='Perlu Pembetulan'?'fix':s==='Dalam Semakan'?'review':'pending';}
  function escape(s){return R.escape(s);}
  function now(){return new Date().toLocaleString('sv-SE',{timeZone:'Asia/Kuala_Lumpur'}).replace('T',' ');}
  function allRowsForCurrent(){return state.records;}
  function filtered(){const term=$('searchInput').value.trim().toLocaleLowerCase('ms-MY'),district=$('districtFilter').value,status=$('statusFilter').value;
   return allRowsForCurrent().filter(x=>(!district||x.district===district)&&(!status||x.reviewStatus===status)&&(!term||[x.name,x.ic,x.department,x.position,x.id].join(' ').toLocaleLowerCase('ms-MY').includes(term)));}
  function updateSelectionBar(){const n=state.selectedIds.size;$('selectedCount').textContent=n+' rekod dipilih';$('deleteSelectedBtn').disabled=!n||state.loading;}
- function setStats(){const d=allRowsForCurrent();$('totalCount').textContent=d.length.toLocaleString('ms-MY');$('pendingCount').textContent=d.filter(x=>x.reviewStatus==='Belum Disemak').length.toLocaleString('ms-MY');$('eRumahCount').textContent=d.filter(x=>x.hasERumah==='Ya').length.toLocaleString('ms-MY');$('completeCount').textContent=d.filter(x=>x.reviewStatus==='Lengkap').length.toLocaleString('ms-MY');}
+ function setStats(){const d=allRowsForCurrent();$('totalCount').textContent=d.length.toLocaleString('ms-MY');$('pendingCount').textContent=d.filter(x=>x.reviewStatus==='Belum Disemak').length.toLocaleString('ms-MY');$('eRumahCount').textContent=d.filter(x=>x.hasERumah==='Ya').length.toLocaleString('ms-MY');$('completeCount').textContent=d.filter(x=>C.reviewChoices.includes(x.reviewStatus)).length.toLocaleString('ms-MY');}
  function render(){if($('adminDashboard').classList.contains('hidden'))return;
   const b=activeBatch();
   $('selectedBatchStatus').textContent=b?b.status:'Belum dipilih';
@@ -1856,9 +1880,10 @@ async function saveBatch(){
    }catch(e){R.toast('Batch tidak berjaya disimpan: '+e.message);}
    finally{lockState(false);}
  }
-  function showModal(index){const x=state.records[index];if(!x)return;state.editIndex=index;$('editRef').textContent=`${x.id} · Batch ${x.batchId} · ${x.createdAt}`;INPUTS.forEach(f=>{$('e-'+f).value=x[f]??''});toggleSpouse();R.toggle('editOverlay',true);document.body.style.overflow='hidden';}
+  function showModal(index){const x=state.records[index];if(!x)return;state.editIndex=index;$('editRef').textContent=`${x.id} · Batch ${x.batchId} · ${x.createdAt}`;INPUTS.forEach(f=>{$('e-'+f).value=x[f]??''});const selectedStatus=C.reviewChoices.includes(x.reviewStatus)?x.reviewStatus:'';$('e-reviewStatus').value=selectedStatus;document.querySelectorAll('input[name="reviewOwnershipChoice"]').forEach(radio=>radio.checked=radio.value===selectedStatus);toggleSpouse();R.toggle('editOverlay',true);document.body.style.overflow='hidden';}
  function hideModal(){R.toggle('editOverlay',false);document.body.style.overflow='';state.editIndex=null;}
  function validateEdit(p){
+   if(!C.reviewChoices.includes(p.reviewStatus))throw new Error('Sila tandakan ADA PEMILIKAN HARTA atau TIADA PEMILIKAN HARTA.');
    if(!/^\d{12}$/.test(p.ic))throw new Error('No. KP mesti mengandungi 12 digit.');
    if(state.records.some((r,i)=>i!==state.editIndex&&String(r.ic).replace(/\D/g,'')===p.ic))throw new Error('No. KP sudah wujud dalam batch ini.');
    if(!/^\+?\d{9,13}$/.test(p.phone.replace(/[ ()-]/g,'')))throw new Error('Nombor telefon tidak sah.');
