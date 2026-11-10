@@ -191,6 +191,29 @@ body{background:#f6f8fb;color:#17314d} .topbar{height:61px;position:sticky;backg
   #editOverlay .modalbody>.fields,#editOverlay .modalbody>.spouse .fields{grid-template-columns:1fr;}
   #editOverlay .modalhead,#editOverlay .modalbody,#editOverlay .modalfooter{padding-left:17px;padding-right:17px;}
 }
+
+/* RMMJ desktop workspace - use more of the available display width. */
+@media (min-width:1100px){
+  .navwrap,.page{max-width:1580px;width:calc(100% - 64px);margin-left:auto;margin-right:auto;}
+  .navwrap{padding-left:0;padding-right:0;}
+  .page{padding-left:0;padding-right:0;}
+  .stats{gap:18px;}
+  .stat{padding:23px 25px;}
+  .datatable{min-width:1080px;}
+  .datatable th,.datatable td{padding-left:17px;padding-right:17px;}
+}
+/* Quick batch search stays in the existing record filters; no extra batch cards. */
+.batch-quick-search{display:grid;grid-template-columns:minmax(145px,1fr) minmax(160px,1fr);column-gap:8px;row-gap:4px;align-items:center;flex:1.65 1 350px;min-width:240px;}
+.batch-quick-search .control{width:100%;height:42px;min-width:0;}
+.batch-quick-search .batch-count{grid-column:1/-1;font-size:10px;color:#72879a;padding-left:2px;min-height:13px;}
+.batch-quick-search select:disabled{opacity:.65;}
+@media(max-width:850px){
+  .batch-quick-search{flex:1 1 100%;grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+}
+@media(max-width:440px){
+  .batch-quick-search{grid-template-columns:1fr;}
+  .batch-quick-search .batch-count{grid-column:1;}
+}
 </style></head>
 <body>
 <div class="admin-progress" id="adminProgress" aria-hidden="true"><span></span></div>
@@ -241,7 +264,7 @@ body{background:#f6f8fb;color:#17314d} .topbar{height:61px;position:sticky;backg
   <div id="pdfPanel" class="pdf-panel card hidden"><div><strong>Jana Laporan PDF</strong><p>Laporan KHUSUS bagi batch yang dipilih, mengikut carian dan tapisan semasa. Data sebenar adalah sulit dan khusus untuk pegawai yang diberi kuasa.</p></div><div class="pdf-settings"><label class="field"><span>Jenis laporan</span><select id="pdfType" class="control select"><option value="detail">Butiran Lengkap Pemohon (Semua 13 Maklumat)</option>
 <option value="summary">Ringkasan & Senarai Pemohon</option></select></label><button type="button" id="generatePdfBtn" class="btn btn-primary btn-small">Muat Turun PDF</button><button type="button" id="closePdfBtn" class="btn btn-outline btn-small">Tutup</button></div></div>
   <div class="stats"><div class="stat"><small>Jumlah Rekod</small><strong id="totalCount">0</strong><div class="stat-icon">▤</div><div class="trend">Rekod dihantar</div></div><div class="stat"><small>Belum Disemak</small><strong id="pendingCount">0</strong><div class="stat-icon">◷</div><div class="trend">Menunggu tindakan</div></div><div class="stat"><small>Ada Akaun e-Rumah</small><strong id="eRumahCount">0</strong><div class="stat-icon">⌂</div><div class="trend">Berdasarkan pengakuan</div></div><div class="stat"><small>Rekod Lengkap</small><strong id="completeCount">0</strong><div class="stat-icon">✓</div><div class="trend">Semakan pentadbiran</div></div></div>
-  <div class="card"><div class="toolbar"><div class="search"><input class="control" type="search" id="searchInput" placeholder="Cari nama, No. KP, jabatan atau jawatan…" aria-label="Carian rekod"></div><select class="control select" id="districtFilter" aria-label="Tapisan daerah"></select><select class="control select" id="statusFilter" aria-label="Tapisan status"></select></div>
+  <div class="card"><div class="toolbar"><div class="batch-quick-search" role="group" aria-label="Carian mengikut batch"><input class="control" type="search" id="batchQuickSearch" placeholder="Cari batch / ID / jabatan…" aria-label="Cari batch berdasarkan nama, ID atau jabatan" autocomplete="off"><select class="control select" id="batchQuickSelect" aria-label="Pilih batch hasil carian"><option value="">Pilih batch</option></select><small class="batch-count" id="batchQuickCount" aria-live="polite"></small></div><div class="search"><input class="control" type="search" id="searchInput" placeholder="Cari nama, No. KP, jabatan atau jawatan…" aria-label="Carian rekod"></div><select class="control select" id="districtFilter" aria-label="Tapisan daerah"></select><select class="control select" id="statusFilter" aria-label="Tapisan status"></select></div>
    <div class="bulkbar"><span id="selectedCount">0 rekod dipilih</span><button type="button" id="clearSelectionBtn" class="btn btn-outline btn-small">Kosongkan Pilihan</button><button type="button" id="deleteSelectedBtn" class="btn btn-red btn-small" disabled>Padam Dipilih</button><small>Pemadaman hanya untuk batch aktif; rekod disalin ke REKOD_DIPADAM.</small></div>
    <div class="tablebox"><table class="datatable"><thead><tr><th><input id="selectPage" type="checkbox" aria-label="Pilih semua rekod pada halaman ini"></th><th>No.</th><th>Nama Pemohon</th><th>Tarikh &amp; Masa Hantar</th><th>Jabatan / Jawatan</th><th>Daerah Minat</th><th>Pendapatan Isi Rumah</th><th>Status</th><th>Tindakan</th></tr></thead><tbody id="dataBody"><tr><td colspan="9" class="empty">Sila log masuk untuk melihat data.</td></tr></tbody></table></div>
    <div class="tablefoot"><span id="tableInfo">Tiada rekod</span><div id="pagination" class="pagination"></div></div>
@@ -1681,6 +1704,19 @@ window.RMMJ_QR = {make:function(value){var q=new QRCode(0,QRErrorCorrectLevel.M)
    // Rekod batch yang dipilih di dropdown dipaparkan terus; tiada senarai kad berganda.
    R.toggle('recordsPanel',!!state.selectedBatchId);
  }
+ function refreshQuickBatchSearch(){
+   const search=$('batchQuickSearch');const picker=$('batchQuickSelect');
+   if(!search||!picker)return;
+   const term=search.value.trim().toLocaleLowerCase('ms-MY');
+   const matches=state.batches.filter(b=>[b.name,b.id,b.organization].join(' ').toLocaleLowerCase('ms-MY').includes(term));
+   picker.replaceChildren();
+   const currentFound=matches.some(b=>b.id===state.selectedBatchId);
+   if(!currentFound)picker.add(new Option(matches.length?'Pilih batch daripada carian':'Tiada batch sepadan',''));
+   matches.forEach(b=>picker.add(new Option(`${b.name} · ${b.id} · ${b.organization}`,b.id)));
+   picker.value=currentFound?state.selectedBatchId:'';
+   picker.disabled=state.loading||matches.length===0;
+   $('batchQuickCount').textContent=`${matches.length} daripada ${state.batches.length} batch`; 
+ }
  function updateBatchUI(){
    $('batchPicker').replaceChildren();
    state.batches.forEach(b=>$('batchPicker').add(new Option(`${b.name} · ${b.id}`,b.id)));
@@ -1689,9 +1725,9 @@ window.RMMJ_QR = {make:function(value){var q=new QRCode(0,QRErrorCorrectLevel.M)
    $('editSelectedBatchBtn').disabled=!b||state.loading;
    $('toggleSelectedBatchBtn').disabled=!b||state.loading;
    $('toggleSelectedBatchBtn').textContent=b?.status==='Dibuka'?'Tutup Batch':'Buka Batch';
-   renderBatchCards();render();
+   refreshQuickBatchSearch();renderBatchCards();render();
  }
- function lockState(value){document.body.classList.toggle('admin-loading',value);state.loading=value;['loginBtn','reloadBtn','saveBtn','deleteBtn','saveBatchBtn','batchPicker','editSelectedBatchBtn','toggleSelectedBatchBtn','clearSelectionBtn','selectPage'].forEach(id=>$(id).disabled=value);updateSelectionBar();}
+ function lockState(value){document.body.classList.toggle('admin-loading',value);state.loading=value;['loginBtn','reloadBtn','saveBtn','deleteBtn','saveBatchBtn','batchPicker','batchQuickSearch','batchQuickSelect','editSelectedBatchBtn','toggleSelectedBatchBtn','clearSelectionBtn','selectPage'].forEach(id=>$(id).disabled=value);refreshQuickBatchSearch();updateSelectionBar();}
 async function adminRpc(op,data={}){
    if(!configured)throw new Error('URL Apps Script /exec belum ditetapkan.');
    const origin=location.origin;
@@ -1749,8 +1785,13 @@ async function loadBatchData(force=false){
      state.recordCache.set(preloadedBatchId,{records:preloadedRecords,time:Date.now()});
    }
    updateBatchUI();syncPanelButtons();
-   $('tableInfo').textContent='Mengambil rekod batch…';
-   await loadBatchData();
+   $('tableInfo').textContent='Memuatkan rekod batch di belakang tabir…';
+   // Dashboard boleh digunakan sebaik sahaja login disahkan. Jangan tunggu
+   // Google Sheets selesai menghantar semua rekod batch pertama.
+   void loadBatchData().catch(err=>{
+     $('tableInfo').textContent='Rekod belum berjaya dimuatkan. Klik Muat Semula.';
+     R.toast('Gagal mengambil rekod: '+(err.message||err));
+   });
  }
  async function loadReal(prefer){
    lockState(true);
@@ -1878,6 +1919,14 @@ async function saveRecord(){
  }
  $('searchInput').addEventListener('input',()=>{state.page=1;render();});
  ['districtFilter','statusFilter'].forEach(id=>$(id).addEventListener('change',()=>{state.page=1;render();}));
+ $('batchQuickSearch').addEventListener('input',()=>refreshQuickBatchSearch());
+ $('batchQuickSearch').addEventListener('keydown',e=>{
+   if(e.key==='Enter'){
+     e.preventDefault();const choices=[...$('batchQuickSelect').options].filter(x=>x.value);
+     if(choices.length===1)chooseBatch(choices[0].value);
+   }
+ });
+ $('batchQuickSelect').addEventListener('change',e=>{if(e.target.value)chooseBatch(e.target.value);});
  $('batchPicker').addEventListener('change',e=>chooseBatch(e.target.value));
  $('copyBatchLinkBtn').addEventListener('click',copyLink);
  $('manageBatchBtn').addEventListener('click',()=>{
